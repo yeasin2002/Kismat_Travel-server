@@ -30,7 +30,9 @@
       "@models/*": ["models/*"],
       "@services/*": ["services/*"],
       "@utils/*": ["utils/*"],
-      "@/*": ["*"],
+      "@db": ["database"],
+      "@db/*": ["database/*"],
+      "@/*": ["*"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.json", ".env"],

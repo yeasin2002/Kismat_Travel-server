@@ -1,52 +1,46 @@
-import { hash } from "bcrypt";
-import { Service } from "typedi";
+import { db } from "@db";
 import { CreateUserDto } from "@dtos/users.dto";
 import { HttpException } from "@exceptions/httpException";
-import { User } from "@interfaces/users.interface";
-import { UserModel } from "@models/users.model";
+import { hash } from "@utils/encryption";
+import { Service } from "typedi";
 
 @Service()
 export class UserService {
-  public async findAllUser(): Promise<User[]> {
-    const users: User[] = UserModel;
-    return users;
+  public async findAllUser() {
+    return await db.Users.findAll();
   }
 
-  public async findUserById(userId: number): Promise<User> {
-    const findUser: User = UserModel.find(user => user.id === userId);
+  public async findUserById(userId: string) {
+    const findUser = await db.Users.findByPk(userId);
+    if (findUser) return findUser;
+
+    throw new HttpException(409, "User doesn't exist");
+  }
+
+  public async createUser(userData: CreateUserDto) {
+    const findUser = await db.Users.findOne({ where: { email: userData.email } });
+    if (findUser) throw new HttpException(409, `This email ${userData.email} already exists`);
+
+    return await db.Users.create({ email: userData.email, password: hash(userData.password, 10) });
+  }
+
+  public async updateUser(userId: string, userData: Omit<CreateUserDto, "email">) {
+    const findUser = await db.Users.findByPk(userId);
     if (!findUser) throw new HttpException(409, "User doesn't exist");
+
+    findUser.password = hash(userData.password, 10);
+
+    await findUser.save();
 
     return findUser;
   }
 
-  public async createUser(userData: CreateUserDto): Promise<User> {
-    const findUser: User = UserModel.find(user => user.email === userData.email);
-    if (findUser) throw new HttpException(409, `This email ${userData.email} already exists`);
-
-    const hashedPassword = await hash(userData.password, 10);
-    const createUserData: User = { id: UserModel.length + 1, ...userData, password: hashedPassword };
-
-    return createUserData;
-  }
-
-  public async updateUser(userId: number, userData: CreateUserDto): Promise<User[]> {
-    const findUser: User = UserModel.find(user => user.id === userId);
+  public async deleteUser(userId: string) {
+    const findUser = await db.Users.findByPk(userId);
     if (!findUser) throw new HttpException(409, "User doesn't exist");
 
-    const hashedPassword = await hash(userData.password, 10);
-    const updateUserData: User[] = UserModel.map((user: User) => {
-      if (user.id === findUser.id) user = { id: userId, ...userData, password: hashedPassword };
-      return user;
-    });
+    await findUser.destroy();
 
-    return updateUserData;
-  }
-
-  public async deleteUser(userId: number): Promise<User[]> {
-    const findUser: User = UserModel.find(user => user.id === userId);
-    if (!findUser) throw new HttpException(409, "User doesn't exist");
-
-    const deleteUserData: User[] = UserModel.filter(user => user.id !== findUser.id);
-    return deleteUserData;
+    return findUser;
   }
 }

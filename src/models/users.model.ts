@@ -1,9 +1,27 @@
-import { User } from "@interfaces/users.interface";
+import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model, Sequelize } from "sequelize";
 
-// password: password
-export const UserModel: User[] = [
-  { id: 1, email: "example1@email.com", password: "$2b$10$TBEfaCe1oo.2jfkBDWcj/usBj4oECsW2wOoDXpCa2IH9xqCpEK/hC" },
-  { id: 2, email: "example2@email.com", password: "$2b$10$TBEfaCe1oo.2jfkBDWcj/usBj4oECsW2wOoDXpCa2IH9xqCpEK/hC" },
-  { id: 3, email: "example3@email.com", password: "$2b$10$TBEfaCe1oo.2jfkBDWcj/usBj4oECsW2wOoDXpCa2IH9xqCpEK/hC" },
-  { id: 4, email: "example4@email.com", password: "$2b$10$TBEfaCe1oo.2jfkBDWcj/usBj4oECsW2wOoDXpCa2IH9xqCpEK/hC" },
-];
+export interface UserModel extends Model<InferAttributes<UserModel>, InferCreationAttributes<UserModel>> {
+  id: CreationOptional<string>;
+  email: string;
+  password: string;
+}
+
+export function UserModel(sequelize: Sequelize) {
+  return sequelize.define<UserModel>("User", {
+    id: {
+      primaryKey: true,
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+    },
+
+    email: {
+      allowNull: false,
+      type: DataTypes.STRING(45),
+    },
+
+    password: {
+      allowNull: false,
+      type: DataTypes.STRING(255),
+    },
+  });
+}
