@@ -1,14 +1,15 @@
 import { SeedService } from "@services/seed.service";
 import { Controller, Post } from "routing-controllers";
-import Container from "typedi";
+import { Service } from "typedi";
 
 @Controller("/seed")
+@Service()
 export class SeedController {
-  public seed = Container.get(SeedService);
+  constructor(public seedService: SeedService) {}
 
   @Post("/airports-data")
   public async seedAirports() {
-    await this.seed.seedAirports();
+    await this.seedService.seedAirports();
     return { success: true };
   }
 }

@@ -11,9 +11,10 @@ import helmet from "helmet";
 import hpp from "hpp";
 import morgan from "morgan";
 import "reflect-metadata";
-import { getMetadataArgsStorage, useExpressServer } from "routing-controllers";
+import { getMetadataArgsStorage, useContainer, useExpressServer } from "routing-controllers";
 import { routingControllersToSpec } from "routing-controllers-openapi";
 import swaggerUi from "swagger-ui-express";
+import Container from "typedi";
 
 export class App {
   public app: express.Application;
@@ -26,6 +27,7 @@ export class App {
     this.port = ENV.PORT;
 
     this.connectToDatabase();
+    this.initializeServices();
     this.initializeMiddlewares();
     this.initializeRoutes(Controllers);
     this.initializeSwagger(Controllers);
@@ -47,6 +49,10 @@ export class App {
 
   private async connectToDatabase() {
     await db.sequelize.sync();
+  }
+
+  private initializeServices() {
+    useContainer(Container);
   }
 
   private initializeMiddlewares() {

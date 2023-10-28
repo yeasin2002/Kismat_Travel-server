@@ -6,23 +6,24 @@ import { ValidationMiddleware } from "@middlewares/validation.middleware";
 import { AuthService } from "@services/auth.service";
 import { Response } from "express";
 import { Body, Controller, HttpCode, Post, Req, Res, UseBefore } from "routing-controllers";
-import { Container } from "typedi";
+import { Service } from "typedi";
 
 @Controller("/auth")
+@Service()
 export class AuthController {
-  public auth = Container.get(AuthService);
+  constructor(public authService: AuthService) {}
 
   @Post("/signup")
   @UseBefore(ValidationMiddleware(CreateUserDto))
   @HttpCode(201)
   async signUp(@Body() userData: User) {
-    return await this.auth.signup(userData);
+    return await this.authService.signup(userData);
   }
 
   @Post("/login")
   @UseBefore(ValidationMiddleware(CreateUserDto))
   async logIn(@Res() res: Response, @Body() userData: User) {
-    const { cookie, findUser } = await this.auth.login(userData);
+    const { cookie, findUser } = await this.authService.login(userData);
 
     res.setHeader("Set-Cookie", [cookie]);
     return findUser;
@@ -31,7 +32,7 @@ export class AuthController {
   @Post("/logout")
   @UseBefore(AuthMiddleware)
   async logOut(@Req() req: RequestWithUser, @Res() res: Response) {
-    const logOutUserData = await this.auth.logout(req.user);
+    const logOutUserData = await this.authService.logout(req.user);
 
     res.setHeader("Set-Cookie", ["Authorization=; Max-age=0"]);
     return logOutUserData;
