@@ -8,7 +8,7 @@ import { Response } from "express";
 import { Body, Controller, HttpCode, Post, Req, Res, UseBefore } from "routing-controllers";
 import { Container } from "typedi";
 
-@Controller()
+@Controller("/auth")
 export class AuthController {
   public auth = Container.get(AuthService);
 

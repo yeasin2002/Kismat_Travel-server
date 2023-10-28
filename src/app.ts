@@ -67,6 +67,7 @@ export class App {
       },
       controllers: controllers,
       defaultErrorHandler: false,
+      routePrefix: "/api/v1",
     });
   }
 
@@ -78,6 +79,7 @@ export class App {
 
     const routingControllersOptions = {
       controllers: controllers,
+      routePrefix: "/api/v1",
     };
 
     const storage = getMetadataArgsStorage();

@@ -1,4 +1,5 @@
 import { ENV } from "@config";
+import { AirportModel } from "@models/airports.model";
 import { UserModel } from "@models/users.model";
 import { logger } from "@utils/logger";
 import { Sequelize } from "sequelize";
@@ -18,7 +19,6 @@ const sequelize = new Sequelize({
     charset: "utf8mb4",
     collate: "utf8mb4_general_ci",
     underscored: true,
-    freezeTableName: true,
   },
 
   pool: {
@@ -39,5 +39,6 @@ sequelize.authenticate();
 
 export const db = {
   Users: UserModel(sequelize),
+  Airports: AirportModel(sequelize),
   sequelize,
 } as const;

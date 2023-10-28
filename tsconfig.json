@@ -32,6 +32,8 @@
       "@utils/*": ["utils/*"],
       "@db": ["database"],
       "@db/*": ["database/*"],
+      "@data": ["data"],
+      "@data/*": ["data/*"],
       "@/*": ["*"]
     }
   },
