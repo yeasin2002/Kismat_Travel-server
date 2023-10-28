@@ -8,27 +8,30 @@ export interface AirportModel extends Model<InferAttributes<AirportModel>, Infer
 }
 
 export function AirportModel(sequelize: Sequelize) {
-  return sequelize.define<AirportModel>("Airport", {
-    id: {
-      primaryKey: true,
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
-    },
+  return sequelize.define<AirportModel>(
+    "Airport",
+    {
+      id: {
+        primaryKey: true,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+      },
 
-    code: {
-      allowNull: false,
-      type: DataTypes.STRING(10),
-      unique: true,
-    },
+      code: {
+        allowNull: false,
+        type: DataTypes.STRING(10),
+      },
 
-    name: {
-      allowNull: false,
-      type: DataTypes.STRING(255),
-    },
+      name: {
+        allowNull: false,
+        type: DataTypes.STRING(255),
+      },
 
-    country: {
-      allowNull: false,
-      type: DataTypes.STRING(255),
+      country: {
+        allowNull: false,
+        type: DataTypes.STRING(255),
+      },
     },
-  });
+    { timestamps: false },
+  );
 }

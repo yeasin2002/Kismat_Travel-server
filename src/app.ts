@@ -46,7 +46,7 @@ export class App {
   }
 
   private async connectToDatabase() {
-    await db.sequelize.sync({ force: false });
+    await db.sequelize.sync();
   }
 
   private initializeMiddlewares() {
