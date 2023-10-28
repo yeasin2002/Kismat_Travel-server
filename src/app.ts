@@ -1,4 +1,5 @@
 import { ENV } from "@config";
+import { db } from "@db";
 import { ErrorMiddleware } from "@middlewares/error.middleware";
 import { logger, stream } from "@utils/logger";
 import { defaultMetadataStorage } from "class-transformer/cjs/storage";
@@ -24,6 +25,7 @@ export class App {
     this.env = ENV.NODE_ENV;
     this.port = ENV.PORT;
 
+    this.connectToDatabase();
     this.initializeMiddlewares();
     this.initializeRoutes(Controllers);
     this.initializeSwagger(Controllers);
@@ -43,6 +45,10 @@ export class App {
     return this.app;
   }
 
+  private async connectToDatabase() {
+    await db.sequelize.sync({ force: false });
+  }
+
   private initializeMiddlewares() {
     this.app.use(morgan(ENV.LOG_FORMAT, { stream }));
     this.app.use(hpp());
@@ -57,7 +63,7 @@ export class App {
     useExpressServer(this.app, {
       cors: {
         origin: ENV.ORIGIN,
-        credentials: Boolean(ENV.CREDENTIALS),
+        credentials: ENV.CREDENTIALS,
       },
       controllers: controllers,
       defaultErrorHandler: false,
