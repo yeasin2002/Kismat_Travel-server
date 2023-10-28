@@ -3,7 +3,7 @@ import { CreateUserDto } from "@dtos/users.dto";
 import { HttpException } from "@exceptions/httpException";
 import { TokenData } from "@interfaces/auth.interface";
 import { User } from "@interfaces/users.interface";
-import { compare, hash } from "@utils/encryption";
+import { compare } from "@utils/encryption";
 import { sign } from "@utils/jwt";
 import cookie from "cookie";
 import { Service } from "typedi";
@@ -21,12 +21,11 @@ export class AuthService {
     const findUser = await db.Users.findOne({ where: { email: userData.email } });
     if (findUser) throw new HttpException(409, `This email ${userData.email} already exists`);
 
-    return await db.Users.create({ ...userData, password: hash(userData.password, 10) });
+    return await db.Users.create({ email: userData.email, password: userData.password });
   }
 
   public async login(userData: CreateUserDto) {
-    const findUser = await db.Users.findOne({ where: { email: userData.email } });
-
+    const findUser = await db.Users.unscoped().findOne({ where: { email: userData.email } });
     if (!findUser) throw new HttpException(409, `This email ${userData.email} was not found`);
 
     if (!compare(userData.password, findUser.password)) throw new HttpException(409, "Password not matching");

@@ -1,18 +1,18 @@
 import { db } from "@db";
 import { CreateUserDto } from "@dtos/users.dto";
 import { HttpException } from "@exceptions/httpException";
-import { hash } from "@utils/encryption";
 import { Service } from "typedi";
 
 @Service()
 export class UserService {
   public async findAllUser() {
-    return await db.Users.findAll();
+    const resArray = await db.Users.findAll();
+    return resArray.map(_v => _v.toJSON());
   }
 
   public async findUserById(userId: string) {
     const findUser = await db.Users.findByPk(userId);
-    if (findUser) return findUser;
+    if (findUser) return findUser.toJSON();
 
     throw new HttpException(409, "User doesn't exist");
   }
@@ -21,15 +21,14 @@ export class UserService {
     const findUser = await db.Users.findOne({ where: { email: userData.email } });
     if (findUser) throw new HttpException(409, `This email ${userData.email} already exists`);
 
-    return await db.Users.create({ email: userData.email, password: hash(userData.password, 10) });
+    return await db.Users.update({ password: userData.password }, { where: { email: userData.email } });
   }
 
   public async updateUser(userId: string, userData: Omit<CreateUserDto, "email">) {
     const findUser = await db.Users.findByPk(userId);
     if (!findUser) throw new HttpException(409, "User doesn't exist");
 
-    findUser.password = hash(userData.password, 10);
-
+    findUser.password = userData.password;
     await findUser.save();
 
     return findUser;
