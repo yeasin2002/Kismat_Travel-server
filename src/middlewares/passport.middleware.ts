@@ -26,7 +26,7 @@ export const PassportGoogleStrategy = new GoogleStrategy(
   {
     clientID: ENV.GOOGLE_CLIENT_ID,
     clientSecret: ENV.GOOGLE_CLIENT_SECRET,
-    callbackURL: ENV.CLIENT_BASE_URL,
+    callbackURL: ENV.GOOGLE_CALLBACK_URL,
     scope: ["profile", "email"],
   },
   async (accessToken, _, profile, done) => {

@@ -20,7 +20,7 @@ export function configureEnv() {
 
     GOOGLE_CLIENT_ID: str(),
     GOOGLE_CLIENT_SECRET: str(),
-    GOOGLE_CALLBACK_URL: str({ default: "https://accounts.google.com/o/oauth2/auth" }),
+    GOOGLE_CALLBACK_URL: str({ default: "http://localhost:3000" }),
 
     CLIENT_BASE_URL: str({ devDefault: "http://localhost:3000" }),
     AUTH_SUCCESS_REDIRECT_PATH: str({ default: "/" }),

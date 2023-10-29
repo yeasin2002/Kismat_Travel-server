@@ -1,17 +1,13 @@
 import { ENV, createClientUrl } from "@config";
 import { CreateUserDto } from "@dtos/users.dto";
 import { HttpException } from "@exceptions/http.exception";
-// import { HttpException } from "@exceptions/http.exception";
-// import { RequestWithUser } from "@interfaces/auth.interface";
-
-import { AuthMiddleware } from "@middlewares/auth.middleware";
 import { ValidationMiddleware } from "@middlewares/validation.middleware";
 import { AuthService } from "@services/auth.service";
 
 import { Response } from "express";
 import passport from "passport";
 
-import { Body, Controller, Get, HttpCode, Post, Req, Res, UseBefore } from "routing-controllers";
+import { Authorized, Body, Controller, Get, HttpCode, Post, Req, Res, UseBefore } from "routing-controllers";
 import { Service } from "typedi";
 
 @Controller("/auth")
@@ -56,10 +52,18 @@ export class AuthController {
     return { success: true };
   }
 
+  @Authorized()
   @Post("/logout")
-  @UseBefore(AuthMiddleware)
-  async logOut(@Res() res: Response) {
-    res.clearCookie("authorization");
-    return { success: true };
+  async logOut(@Req() req: Express.Request, @Res() res: Response) {
+    return new Promise<any>((resolve, reject) => {
+      req.logOut(err => {
+        if (err) {
+          reject({ message: "Authentication failed" });
+        } else {
+          res.redirect(ENV.AUTH_FAILED_REDIRECT_PATH);
+          resolve({ success: true });
+        }
+      });
+    });
   }
 }

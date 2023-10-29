@@ -1,5 +1,6 @@
 import { ENV } from "@config";
 import { db } from "@db";
+import { Modify } from "@interfaces/util.interface";
 import { ErrorMiddleware } from "@middlewares/error.middleware";
 import { PassportGoogleStrategy, PassportLocalStrategy, deserializeUser, serializeUser } from "@middlewares/passport.middleware";
 import { logger, stream } from "@utils/logger";
@@ -14,7 +15,7 @@ import hpp from "hpp";
 import morgan from "morgan";
 import passport from "passport";
 import "reflect-metadata";
-import { getMetadataArgsStorage, useContainer, useExpressServer } from "routing-controllers";
+import { Action, getMetadataArgsStorage, useContainer, useExpressServer } from "routing-controllers";
 import { routingControllersToSpec } from "routing-controllers-openapi";
 import swaggerUi from "swagger-ui-express";
 import Container from "typedi";
@@ -86,9 +87,28 @@ export class App {
         origin: ENV.ORIGIN,
         credentials: ENV.CREDENTIALS,
       },
+
       controllers: controllers,
       defaultErrorHandler: false,
       routePrefix: "/api/v1",
+
+      authorizationChecker: ({ request }: Modify<Action, { request: Express.Request }>) => {
+        if (
+          request.isAuthenticated &&
+          request.isAuthenticated() &&
+          typeof request.user === "object" &&
+          request.user !== null &&
+          !Array.isArray(request.user) &&
+          "email" in request.user &&
+          "password" in request.user
+        ) {
+          return true;
+        }
+
+        return false;
+      },
+
+      currentUserChecker: action => action.request.user,
     });
   }
 
