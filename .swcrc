@@ -20,7 +20,6 @@
     },
     "baseUrl": "src",
     "paths": {
-      "@/*": ["*"],
       "@config": ["config"],
       "@controllers/*": ["controllers/*"],
       "@dtos/*": ["dtos/*"],
@@ -29,7 +28,12 @@
       "@middlewares/*": ["middlewares/*"],
       "@models/*": ["models/*"],
       "@services/*": ["services/*"],
-      "@utils/*": ["utils/*"]
+      "@utils/*": ["utils/*"],
+      "@db": ["database"],
+      "@db/*": ["database/*"],
+      "@data": ["data"],
+      "@data/*": ["data/*"],
+      "@/*": ["*"]
     }
   },
   "module": {

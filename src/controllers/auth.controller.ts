@@ -1,11 +1,16 @@
 import { CreateUserDto } from "@dtos/users.dto";
-import { RequestWithUser } from "@interfaces/auth.interface";
-import { User } from "@interfaces/users.interface";
+import { HttpException } from "@exceptions/http.exception";
+// import { HttpException } from "@exceptions/http.exception";
+// import { RequestWithUser } from "@interfaces/auth.interface";
+
 import { AuthMiddleware } from "@middlewares/auth.middleware";
 import { ValidationMiddleware } from "@middlewares/validation.middleware";
 import { AuthService } from "@services/auth.service";
+
 import { Response } from "express";
-import { Body, Controller, HttpCode, Post, Req, Res, UseBefore } from "routing-controllers";
+import passport from "passport";
+
+import { Body, Controller, Get, HttpCode, Post, Req, Res, UseBefore } from "routing-controllers";
 import { Service } from "typedi";
 
 @Controller("/auth")
@@ -16,25 +21,39 @@ export class AuthController {
   @Post("/signup")
   @UseBefore(ValidationMiddleware(CreateUserDto))
   @HttpCode(201)
-  async signUp(@Body() userData: User) {
-    return await this.authService.signup(userData);
+  async signUp(@Body() userData: CreateUserDto, @Req() req: Express.Request) {
+    if (req.isAuthenticated()) throw new HttpException(403, "User already login!");
+
+    const newUser = await this.authService.signup(userData);
+
+    return new Promise<any>((resolve, reject) => {
+      req.login(newUser, err => {
+        if (err) {
+          reject({ message: "Authentication failed" });
+        } else {
+          delete newUser.password;
+          resolve({ success: true, auth: newUser });
+        }
+      });
+    });
   }
 
   @Post("/login")
-  @UseBefore(ValidationMiddleware(CreateUserDto))
-  async logIn(@Res() res: Response, @Body() userData: User) {
-    const { cookie, findUser } = await this.authService.login(userData);
+  @UseBefore(ValidationMiddleware(CreateUserDto), passport.authenticate("local"))
+  async logIn() {
+    return { success: true };
+  }
 
-    res.setHeader("Set-Cookie", [cookie]);
-    return findUser;
+  @Get("/google")
+  @UseBefore(passport.authenticate("google"))
+  async googleLogin() {
+    return { success: true };
   }
 
   @Post("/logout")
   @UseBefore(AuthMiddleware)
-  async logOut(@Req() req: RequestWithUser, @Res() res: Response) {
-    const logOutUserData = await this.authService.logout(req.user);
-
-    res.setHeader("Set-Cookie", ["Authorization=; Max-age=0"]);
-    return logOutUserData;
+  async logOut(@Res() res: Response) {
+    res.clearCookie("authorization");
+    return { success: true };
   }
 }

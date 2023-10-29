@@ -5,7 +5,7 @@ import { verify } from "@utils/jwt";
 import { NextFunction, Request, Response } from "express";
 
 const getAuthorization = (req: Request) => {
-  if (req.cookies["Authorization"]) return req.cookies["Authorization"];
+  if (req.cookies["authorization"]) return req.cookies["authorization"];
 
   const header = req.header("Authorization");
   if (header) return header.split("Bearer ")[1];

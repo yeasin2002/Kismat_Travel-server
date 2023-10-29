@@ -1,7 +1,7 @@
 import { ENV } from "@config";
 import { db } from "@db";
 import { ErrorMiddleware } from "@middlewares/error.middleware";
-import { PassportGoogleStrategy, PassportLocalStrategy } from "@middlewares/passport.middleware";
+import { PassportGoogleStrategy, PassportLocalStrategy, deserializeUser, serializeUser } from "@middlewares/passport.middleware";
 import { logger, stream } from "@utils/logger";
 import { defaultMetadataStorage } from "class-transformer/cjs/storage";
 import { validationMetadatasToSchemas } from "class-validator-jsonschema";
@@ -75,6 +75,9 @@ export class App {
   private initializePassport() {
     passport.use(PassportLocalStrategy);
     passport.use(PassportGoogleStrategy);
+
+    passport.serializeUser(serializeUser);
+    passport.deserializeUser(deserializeUser);
   }
 
   private initializeRoutes(controllers: Function[]) {
