@@ -5,7 +5,7 @@ config({ path: `.env.${process.env.NODE_ENV || "development"}.local` });
 export function configureEnv() {
   return cleanEnv(process.env, {
     NODE_ENV: str(),
-    PORT: port({ devDefault: 3000 }),
+    PORT: port({ devDefault: 5000 }),
 
     SECRET_KEY: str({ devDefault: "secretKey" }),
 
@@ -22,9 +22,17 @@ export function configureEnv() {
     GOOGLE_CLIENT_SECRET: str(),
     GOOGLE_CALLBACK_URL: str({ default: "https://accounts.google.com/o/oauth2/auth" }),
 
+    CLIENT_BASE_URL: str({ devDefault: "http://localhost:3000" }),
+    AUTH_SUCCESS_REDIRECT_PATH: str({ default: "/" }),
+    AUTH_FAILED_REDIRECT_PATH: str({ default: "/login" }),
+
     LOG_FORMAT: str({ devDefault: "dev", default: "combined" }),
     LOG_DIR: str({ default: "logs" }),
   });
 }
 
 export const ENV = configureEnv();
+
+export function createClientUrl(str: string) {
+  return `${ENV.CLIENT_BASE_URL.replace(/\/$/, "")}/${str.replace(/^\//, "")}`;
+}

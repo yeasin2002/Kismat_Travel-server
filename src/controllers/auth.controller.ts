@@ -1,3 +1,4 @@
+import { ENV, createClientUrl } from "@config";
 import { CreateUserDto } from "@dtos/users.dto";
 import { HttpException } from "@exceptions/http.exception";
 // import { HttpException } from "@exceptions/http.exception";
@@ -45,7 +46,12 @@ export class AuthController {
   }
 
   @Get("/google")
-  @UseBefore(passport.authenticate("google"))
+  @UseBefore(
+    passport.authenticate("google", {
+      successRedirect: createClientUrl(ENV.AUTH_SUCCESS_REDIRECT_PATH),
+      failureRedirect: createClientUrl(ENV.AUTH_FAILED_REDIRECT_PATH),
+    }),
+  )
   async googleLogin() {
     return { success: true };
   }
