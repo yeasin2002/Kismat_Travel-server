@@ -1,6 +1,6 @@
-import { HttpException } from "@exceptions/httpException";
+import { db } from "@db";
+import { HttpException } from "@exceptions/http.exception";
 import { DataStoredInToken, RequestWithUser } from "@interfaces/auth.interface";
-import { UserModel } from "@models/users.model";
 import { verify } from "@utils/jwt";
 import { NextFunction, Request, Response } from "express";
 
@@ -23,7 +23,7 @@ export const AuthMiddleware = async (req: RequestWithUser, res: Response, next: 
 
     if (!payload.valid) return next(new HttpException(401, "Wrong authentication token"));
 
-    const findUser = UserModel.find(user => user.id === payload.id);
+    const findUser = await db.Users.findByPk(payload.id);
 
     if (findUser) {
       req.user = findUser;

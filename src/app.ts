@@ -1,15 +1,18 @@
 import { ENV } from "@config";
 import { db } from "@db";
 import { ErrorMiddleware } from "@middlewares/error.middleware";
+import { PassportGoogleStrategy, PassportLocalStrategy } from "@middlewares/passport.middleware";
 import { logger, stream } from "@utils/logger";
 import { defaultMetadataStorage } from "class-transformer/cjs/storage";
 import { validationMetadatasToSchemas } from "class-validator-jsonschema";
 import compression from "compression";
 import cookieParser from "cookie-parser";
 import express from "express";
+import session from "express-session";
 import helmet from "helmet";
 import hpp from "hpp";
 import morgan from "morgan";
+import passport from "passport";
 import "reflect-metadata";
 import { getMetadataArgsStorage, useContainer, useExpressServer } from "routing-controllers";
 import { routingControllersToSpec } from "routing-controllers-openapi";
@@ -29,6 +32,7 @@ export class App {
     this.connectToDatabase();
     this.initializeServices();
     this.initializeMiddlewares();
+    this.initializePassport();
     this.initializeRoutes(Controllers);
     this.initializeSwagger(Controllers);
     this.initializeErrorHandling();
@@ -63,6 +67,14 @@ export class App {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(cookieParser());
+    this.app.use(session({ secret: ENV.SECRET_KEY, resave: true, saveUninitialized: true }));
+    this.app.use(passport.initialize());
+    this.app.use(passport.session());
+  }
+
+  private initializePassport() {
+    passport.use(PassportLocalStrategy);
+    passport.use(PassportGoogleStrategy);
   }
 
   private initializeRoutes(controllers: Function[]) {

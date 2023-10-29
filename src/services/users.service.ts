@@ -1,6 +1,6 @@
 import { db } from "@db";
 import { CreateUserDto } from "@dtos/users.dto";
-import { HttpException } from "@exceptions/httpException";
+import { HttpException } from "@exceptions/http.exception";
 import { Service } from "typedi";
 
 @Service()

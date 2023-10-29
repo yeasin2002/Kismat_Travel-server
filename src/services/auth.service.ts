@@ -1,6 +1,6 @@
 import { db } from "@db";
 import { CreateUserDto } from "@dtos/users.dto";
-import { HttpException } from "@exceptions/httpException";
+import { HttpException } from "@exceptions/http.exception";
 import { TokenData } from "@interfaces/auth.interface";
 import { User } from "@interfaces/users.interface";
 import { compare } from "@utils/encryption";

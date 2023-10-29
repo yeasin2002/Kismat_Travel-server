@@ -1,4 +1,4 @@
-import { HttpException } from "@exceptions/httpException";
+import { HttpException } from "@exceptions/http.exception";
 import { plainToInstance } from "class-transformer";
 import { validateOrReject, ValidationError } from "class-validator";
 import { NextFunction, Request, Response } from "express";

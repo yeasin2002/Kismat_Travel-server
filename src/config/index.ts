@@ -18,6 +18,10 @@ export function configureEnv() {
     DATABASE_HOST: str({ devDefault: "localhost" }),
     DATABASE_PASSWORD: str({ devDefault: "" }),
 
+    GOOGLE_CLIENT_ID: str(),
+    GOOGLE_CLIENT_SECRET: str(),
+    GOOGLE_CALLBACK_URL: str({ default: "https://accounts.google.com/o/oauth2/auth" }),
+
     LOG_FORMAT: str({ devDefault: "dev", default: "combined" }),
     LOG_DIR: str({ default: "logs" }),
   });
