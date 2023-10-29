@@ -1,5 +1,6 @@
 import { ENV } from "@config";
 import { db } from "@db";
+import { HttpException } from "@exceptions/http.exception";
 import { Modify } from "@interfaces/util.interface";
 import { ErrorMiddleware } from "@middlewares/error.middleware";
 import { PassportGoogleStrategy, PassportLocalStrategy, deserializeUser, serializeUser } from "@middlewares/passport.middleware";
@@ -105,7 +106,7 @@ export class App {
           return true;
         }
 
-        return false;
+        throw new HttpException(401, "Authentication required");
       },
 
       currentUserChecker: action => action.request.user,
