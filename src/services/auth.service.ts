@@ -1,6 +1,7 @@
 import { db } from "@db";
-import { CreateUserDto } from "@dtos/users.dto";
+import { CreateUserDto, UpdatePasswordDto } from "@dtos/users.dto";
 import { HttpException } from "@exceptions/http.exception";
+import { User } from "@interfaces/users.interface";
 import { compare } from "@utils/encryption";
 import { Service } from "typedi";
 
@@ -13,18 +14,24 @@ export class AuthService {
     return createdUser.toJSON();
   }
 
-  public async login(userData: CreateUserDto) {
-    const findUser = await db.Users.unscoped().findOne({ where: { email: userData.email } });
-    if (!findUser) throw new HttpException(409, `This email ${userData.email} was not found`);
-    if (!compare(userData.password, findUser.password)) throw new HttpException(409, "Password not matching");
-    return findUser.toJSON();
+  public async login() {
+    return { success: true };
   }
 
-  public async logout(userData: CreateUserDto) {
-    const findUser = await db.Users.findOne({ where: { email: userData.email } });
+  public async logout() {
+    return { success: true };
+  }
 
-    if (findUser && compare(userData.password, findUser.password)) return findUser;
+  public async passwordChange(user: User, credentials: UpdatePasswordDto) {
+    const dbUser = await db.Users.unscoped().findByPk(user.id);
 
-    throw new HttpException(409, "User doesn't exist");
+    if (!compare(credentials["current-password"], dbUser.password)) {
+      return new HttpException(401, "Authentication failed");
+    }
+
+    dbUser.password = credentials.password;
+    await dbUser.save();
+
+    return { success: true };
   }
 }

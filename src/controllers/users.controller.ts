@@ -2,7 +2,7 @@ import { CreateUserDto } from "@dtos/users.dto";
 import { User } from "@interfaces/users.interface";
 import { ValidationMiddleware } from "@middlewares/validation.middleware";
 import { UserService } from "@services/users.service";
-import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, UseBefore } from "routing-controllers";
+import { Body, Controller, Delete, Get, Param, Put, UseBefore } from "routing-controllers";
 import { OpenAPI } from "routing-controllers-openapi";
 import { Service } from "typedi";
 
@@ -21,14 +21,6 @@ export class UserController {
   @OpenAPI({ summary: "Return find a user" })
   async getUserById(@Param("id") userId: string) {
     return await this.userService.findUserById(userId);
-  }
-
-  @Post()
-  @HttpCode(201)
-  @UseBefore(ValidationMiddleware(CreateUserDto))
-  @OpenAPI({ summary: "Create a new user" })
-  async createUser(@Body() userData: User) {
-    return await this.userService.createUser(userData);
   }
 
   @Put("/:id")

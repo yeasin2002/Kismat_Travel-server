@@ -1,13 +1,14 @@
 import { ENV, createClientUrl } from "@config";
-import { CreateUserDto } from "@dtos/users.dto";
+import { CreateUserDto, UpdatePasswordDto } from "@dtos/users.dto";
 import { HttpException } from "@exceptions/http.exception";
+import { User } from "@interfaces/users.interface";
 import { ValidationMiddleware } from "@middlewares/validation.middleware";
 import { AuthService } from "@services/auth.service";
 
 import { Response } from "express";
 import passport from "passport";
 
-import { Authorized, Body, Controller, Get, HttpCode, Post, Req, Res, UseBefore } from "routing-controllers";
+import { Authorized, Body, Controller, CurrentUser, Get, HttpCode, Post, Req, Res, UseBefore } from "routing-controllers";
 import { Service } from "typedi";
 
 @Controller("/auth")
@@ -38,7 +39,7 @@ export class AuthController {
   @Post("/login")
   @UseBefore(ValidationMiddleware(CreateUserDto), passport.authenticate("local"))
   async logIn() {
-    return { success: true };
+    return this.authService.login();
   }
 
   @Get("/google")
@@ -49,7 +50,7 @@ export class AuthController {
     }),
   )
   async googleLogin() {
-    return { success: true };
+    return this.authService.login();
   }
 
   @Authorized()
@@ -65,5 +66,12 @@ export class AuthController {
         }
       });
     });
+  }
+
+  @Authorized()
+  @Post("/change-password")
+  @UseBefore(ValidationMiddleware(UpdatePasswordDto))
+  async updatePassword(@CurrentUser() user: User, @Body() credentials: UpdatePasswordDto) {
+    return this.authService.passwordChange(user, credentials);
   }
 }

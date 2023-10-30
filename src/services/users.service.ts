@@ -17,21 +17,17 @@ export class UserService {
     throw new HttpException(409, "User doesn't exist");
   }
 
-  public async createUser(userData: CreateUserDto) {
-    const findUser = await db.Users.findOne({ where: { email: userData.email } });
-    if (findUser) throw new HttpException(409, `This email ${userData.email} already exists`);
-
-    return await db.Users.update({ password: userData.password }, { where: { email: userData.email } });
-  }
-
   public async updateUser(userId: string, userData: Omit<CreateUserDto, "email">) {
-    const findUser = await db.Users.findByPk(userId);
+    const findUser = await db.Users.unscoped().findByPk(userId);
     if (!findUser) throw new HttpException(409, "User doesn't exist");
 
     findUser.password = userData.password;
     await findUser.save();
 
-    return findUser;
+    const userJSON = findUser.toJSON();
+    delete userJSON.password;
+
+    return userJSON;
   }
 
   public async deleteUser(userId: string) {
@@ -40,6 +36,6 @@ export class UserService {
 
     await findUser.destroy();
 
-    return findUser;
+    return findUser.toJSON();
   }
 }
