@@ -8,7 +8,7 @@ export class AirportController {
   constructor(public airportService: AirportsService) {}
 
   @Get()
-  public async getAirports(@QueryParam("q") search: string, @QueryParam("page") page: number, @QueryParam("docs-per-page") limit: number) {
-    return await this.airportService.getAirports(search, page, limit);
+  public async getAirports(@QueryParam("q") search: string, @QueryParam("docs-per-page") limit: number) {
+    return await this.airportService.getAirports(search, limit);
   }
 }
