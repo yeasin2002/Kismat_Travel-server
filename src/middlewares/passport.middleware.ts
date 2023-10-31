@@ -29,14 +29,12 @@ export const PassportGoogleStrategy = new GoogleStrategy(
     callbackURL: ENV.GOOGLE_CALLBACK_URL,
     scope: ["profile", "email"],
   },
-  async (accessToken, _, profile, done) => {
+  async (accessToken, _, { displayName, _json, profileUrl }, done) => {
     try {
-      const { email } = profile._json;
-
-      const findUser = await db.Users.unscoped().findOne({ where: { email } });
+      const findUser = await db.Users.unscoped().findOne({ where: { email: _json.email } });
       if (findUser) return done(null, findUser.toJSON());
 
-      const newUser = await db.Users.create({ email, password: accessToken });
+      const newUser = await db.Users.create({ email: _json.email, password: accessToken, name: displayName, photoUrl: profileUrl });
       done(null, newUser.toJSON());
     } catch (error) {
       return done(error);
