@@ -1,12 +1,12 @@
 import { ENV, createClientUrl } from "@config";
-import { CreateUserDto, LoginUserDto, UpdatePasswordDto } from "@dtos/users.dto";
+import { CreateUserDto, SingInUserDto, UpdatePasswordDto } from "@dtos/users.dto";
 import { HttpException } from "@exceptions/http.exception";
 import { User } from "@interfaces/users.interface";
 import { ValidationMiddleware } from "@middlewares/validation.middleware";
 import { AuthService } from "@services/auth.service";
 import { body } from "@utils/swagger";
 import passport from "passport";
-import { Authorized, Body, Controller, CurrentUser, Get, HttpCode, Post, Req, UseBefore } from "routing-controllers";
+import { Authorized, Body, Controller, CurrentUser, Get, HttpCode, Post, Put, Req, UseBefore } from "routing-controllers";
 import { OpenAPI } from "routing-controllers-openapi";
 import { Service } from "typedi";
 
@@ -29,17 +29,17 @@ export class AuthController {
           reject({ message: "Authentication failed" });
         } else {
           delete newUser.password;
-          resolve({ success: true, auth: newUser });
+          resolve(newUser);
         }
       });
     });
   }
 
-  @Post("/login")
-  @UseBefore(ValidationMiddleware(LoginUserDto), passport.authenticate("local"))
-  @OpenAPI(body("LoginUserDto"))
-  async logIn() {
-    return this.authService.login();
+  @Post("/singin")
+  @UseBefore(ValidationMiddleware(SingInUserDto), passport.authenticate("local"))
+  @OpenAPI(body("SingInUserDto"))
+  async logIn(@CurrentUser() user: User) {
+    return this.authService.login(user);
   }
 
   @Get("/google")
@@ -49,12 +49,12 @@ export class AuthController {
       failureRedirect: createClientUrl(ENV.AUTH_FAILED_REDIRECT_PATH),
     }),
   )
-  async googleLogin() {
-    return this.authService.login();
+  async googleLogin(@CurrentUser() user: User) {
+    return this.authService.login(user);
   }
 
   @Authorized()
-  @Post("/logout")
+  @Post("/singout")
   async logOut(@Req() req: Express.Request) {
     return await new Promise<any>((resolve, reject) => {
       req.logOut(err => {
@@ -68,7 +68,7 @@ export class AuthController {
   }
 
   @Authorized()
-  @Post("/change-password")
+  @Put("/change-password")
   @UseBefore(ValidationMiddleware(UpdatePasswordDto))
   async updatePassword(@CurrentUser() user: User, @Body() credentials: UpdatePasswordDto) {
     return this.authService.passwordChange(user, credentials);

@@ -14,8 +14,8 @@ export class AuthService {
     return createdUser.toJSON();
   }
 
-  public async login() {
-    return { success: true };
+  public async login(user: User) {
+    return user;
   }
 
   public async logout() {

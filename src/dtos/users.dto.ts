@@ -8,13 +8,13 @@ export class UserPasswordDto {
   public password: string;
 }
 
-export class LoginUserDto extends UserPasswordDto {
+export class SingInUserDto extends UserPasswordDto {
   @IsNotEmpty()
   @IsEmail()
   public email: string;
 }
 
-export class CreateUserDto extends LoginUserDto {
+export class CreateUserDto extends SingInUserDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(32)
