@@ -5,6 +5,8 @@ export interface UserModel extends Model<InferAttributes<UserModel>, InferCreati
   id: CreationOptional<string>;
   email: string;
   password: string;
+  name: string;
+  photoUrl: CreationOptional<string>;
 }
 
 export function UserModel(sequelize: Sequelize) {
@@ -19,7 +21,19 @@ export function UserModel(sequelize: Sequelize) {
 
       email: {
         allowNull: false,
-        type: DataTypes.STRING(45),
+        type: DataTypes.STRING,
+        validate: {
+          isEmail: true,
+        },
+      },
+
+      name: {
+        allowNull: false,
+        type: DataTypes.STRING,
+      },
+
+      photoUrl: {
+        type: DataTypes.STRING,
       },
 
       password: {

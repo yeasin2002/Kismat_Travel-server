@@ -10,7 +10,7 @@ export class AuthService {
   public async signup(userData: CreateUserDto) {
     const findUser = await db.Users.findOne({ where: { email: userData.email } });
     if (findUser) throw new HttpException(409, `This email ${userData.email} already exists`);
-    const createdUser = await db.Users.create({ email: userData.email, password: userData.password });
+    const createdUser = await db.Users.create({ email: userData.email, password: userData.password, name: userData.name });
     return createdUser.toJSON();
   }
 
