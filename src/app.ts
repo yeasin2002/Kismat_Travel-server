@@ -8,6 +8,7 @@ import { logger, stream } from "@utils/logger";
 import { defaultMetadataStorage } from "class-transformer/cjs/storage";
 import { validationMetadatasToSchemas } from "class-validator-jsonschema";
 import compression from "compression";
+import createSequelizeStore from "connect-session-sequelize";
 import cookieParser from "cookie-parser";
 import express from "express";
 import session from "express-session";
@@ -31,13 +32,13 @@ export class App {
     this.env = ENV.NODE_ENV;
     this.port = ENV.PORT;
 
-    this.connectToDatabase();
     this.initializeServices();
     this.initializeMiddlewares();
     this.initializePassport();
     this.initializeRoutes(Controllers);
     this.initializeSwagger(Controllers);
     this.initializeErrorHandling();
+    this.connectToDatabase();
   }
 
   public listen() {
@@ -69,9 +70,14 @@ export class App {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(cookieParser());
-    this.app.use(session({ secret: ENV.SECRET_KEY, resave: true, saveUninitialized: true }));
+    this.app.use(session({ secret: ENV.SECRET_KEY, resave: true, saveUninitialized: true, store: this.getSessionStore() }));
     this.app.use(passport.initialize());
     this.app.use(passport.session());
+  }
+
+  private getSessionStore() {
+    const SequelizeStore = createSequelizeStore(session.Store);
+    return new SequelizeStore({ db: db.sequelize });
   }
 
   private initializePassport() {
@@ -136,8 +142,8 @@ export class App {
         },
       },
       info: {
-        description: "Generated with `routing-controllers-openapi`",
-        title: "A sample API",
+        description: "Build and maintain by `DEWANICT`",
+        title: "Air ticket booking",
         version: "1.0.0",
       },
     });

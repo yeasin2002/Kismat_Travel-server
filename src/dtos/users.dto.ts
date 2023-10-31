@@ -1,39 +1,30 @@
 import { IsEmail, IsNotEmpty, IsString, MaxLength, MinLength } from "class-validator";
 
-export class CreateUserDto {
-  @IsEmail()
-  public email: string;
-
+export class UserPasswordDto {
   @IsString()
   @IsNotEmpty()
   @MinLength(6)
   @MaxLength(32)
   public password: string;
+}
 
+export class LoginUserDto extends UserPasswordDto {
+  @IsNotEmpty()
+  @IsEmail()
+  public email: string;
+}
+
+export class CreateUserDto extends LoginUserDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(32)
   public name: string;
 }
 
-export class UpdateUserDto {
-  @IsString()
-  @IsNotEmpty()
-  @MinLength(6)
-  @MaxLength(32)
-  public password: string;
-}
-
-export class UpdatePasswordDto {
+export class UpdatePasswordDto extends UserPasswordDto {
   @IsString()
   @IsNotEmpty()
   @MinLength(6)
   @MaxLength(32)
   public "current-password": string;
-
-  @IsString()
-  @IsNotEmpty()
-  @MinLength(6)
-  @MaxLength(32)
-  public password: string;
 }

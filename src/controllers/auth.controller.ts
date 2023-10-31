@@ -1,14 +1,13 @@
 import { ENV, createClientUrl } from "@config";
-import { CreateUserDto, UpdatePasswordDto } from "@dtos/users.dto";
+import { CreateUserDto, LoginUserDto, UpdatePasswordDto } from "@dtos/users.dto";
 import { HttpException } from "@exceptions/http.exception";
 import { User } from "@interfaces/users.interface";
 import { ValidationMiddleware } from "@middlewares/validation.middleware";
 import { AuthService } from "@services/auth.service";
-
-import { Response } from "express";
+import { body } from "@utils/swagger";
 import passport from "passport";
-
-import { Authorized, Body, Controller, CurrentUser, Get, HttpCode, Post, Req, Res, UseBefore } from "routing-controllers";
+import { Authorized, Body, Controller, CurrentUser, Get, HttpCode, Post, Req, UseBefore } from "routing-controllers";
+import { OpenAPI } from "routing-controllers-openapi";
 import { Service } from "typedi";
 
 @Controller("/auth")
@@ -37,7 +36,8 @@ export class AuthController {
   }
 
   @Post("/login")
-  @UseBefore(ValidationMiddleware(CreateUserDto), passport.authenticate("local"))
+  @UseBefore(ValidationMiddleware(LoginUserDto), passport.authenticate("local"))
+  @OpenAPI(body("LoginUserDto"))
   async logIn() {
     return this.authService.login();
   }
@@ -55,13 +55,12 @@ export class AuthController {
 
   @Authorized()
   @Post("/logout")
-  async logOut(@Req() req: Express.Request, @Res() res: Response) {
-    return new Promise<any>((resolve, reject) => {
+  async logOut(@Req() req: Express.Request) {
+    return await new Promise<any>((resolve, reject) => {
       req.logOut(err => {
         if (err) {
           reject({ message: "Authentication failed" });
         } else {
-          res.redirect(ENV.AUTH_FAILED_REDIRECT_PATH);
           resolve({ success: true });
         }
       });
