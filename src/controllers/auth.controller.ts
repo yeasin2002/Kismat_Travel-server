@@ -21,6 +21,7 @@ export class AuthController {
   @Authorized()
   @Get("/current")
   currentUser(@CurrentUser() user: User) {
+    delete user.password;
     return user;
   }
 
