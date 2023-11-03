@@ -3,7 +3,7 @@ import { db } from "@db";
 import { HttpException } from "@exceptions/http.exception";
 import { Modify } from "@interfaces/util.interface";
 import { ErrorMiddleware } from "@middlewares/error.middleware";
-import { PassportGoogleStrategy, PassportLocalStrategy, deserializeUser, serializeUser } from "@middlewares/passport.middleware";
+import { PassportGoogleStrategy, PassportLocalStrategy } from "@middlewares/passport.middleware";
 import { verify } from "@utils/jwt";
 import { logger, stream } from "@utils/logger";
 import { defaultMetadataStorage } from "class-transformer/cjs/storage";
@@ -64,12 +64,7 @@ export class App {
 
   private initializeMiddlewares() {
     this.app.use(morgan(ENV.LOG_FORMAT, { stream }));
-    this.app.use(
-      cors({
-        origin: ENV.ORIGIN,
-        credentials: ENV.CREDENTIALS,
-      }),
-    );
+    this.app.use(cors({ origin: ENV.ORIGIN, credentials: ENV.CREDENTIALS }));
     this.app.use(hpp());
     this.app.use(helmet());
     this.app.use(compression());
@@ -77,19 +72,11 @@ export class App {
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(cookieParser());
     this.app.use(passport.initialize());
-    this.app.use((req, _, next) => {
-      console.log(req.user, "watching user");
-      console.log(req.cookies, "watching cookies");
-      next();
-    });
   }
 
   private initializePassport() {
     passport.use(PassportGoogleStrategy);
     passport.use(PassportLocalStrategy);
-
-    passport.serializeUser(serializeUser);
-    passport.deserializeUser(deserializeUser);
   }
 
   private initializeRoutes(controllers: Function[]) {
@@ -105,7 +92,7 @@ export class App {
         const validation = verify<{ id: string }>(auth.replace("Bearer ", ""));
         if (!validation.valid) throw new HttpException(401, "Authentication required");
 
-        const User = await db.Users.findByPk(validation.id);
+        const User = await db.Users.unscoped().findByPk(validation.id);
         if (!User) throw new HttpException(401, "Authentication required");
 
         request.user = User.toJSON();

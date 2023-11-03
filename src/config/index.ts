@@ -23,7 +23,7 @@ export function configureEnv() {
     GOOGLE_CALLBACK_URL: str({ default: "http://localhost:3000" }),
 
     CLIENT_BASE_URL: str({ devDefault: "http://localhost:3000" }),
-    AUTH_SUCCESS_REDIRECT_PATH: str({ default: "/" }),
+    AUTH_SUCCESS_REDIRECT_PATH: str({ default: "/signin" }),
     AUTH_FAILED_REDIRECT_PATH: str({ default: "/signin" }),
 
     LOG_FORMAT: str({ devDefault: "dev", default: "combined" }),

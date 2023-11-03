@@ -1,12 +1,15 @@
 import { ENV, createClientUrl } from "@config";
 import { CreateUserDto, SingInUserDto, UpdatePasswordDto } from "@dtos/users.dto";
 import { HttpException } from "@exceptions/http.exception";
+import { RequestWithUser } from "@interfaces/auth.interface";
 import { User } from "@interfaces/users.interface";
 import { ValidationMiddleware } from "@middlewares/validation.middleware";
 import { AuthService } from "@services/auth.service";
+import { sign } from "@utils/jwt";
 import { body } from "@utils/swagger";
+import { Response } from "express";
 import passport from "passport";
-import { Authorized, Body, Controller, CurrentUser, Get, HttpCode, Post, Put, Redirect, Req, UseBefore } from "routing-controllers";
+import { Authorized, Body, Controller, CurrentUser, Get, HttpCode, Post, Put, Req, UseBefore } from "routing-controllers";
 import { OpenAPI } from "routing-controllers-openapi";
 import { Service } from "typedi";
 
@@ -54,10 +57,14 @@ export class AuthController {
       failureRedirect: createClientUrl(ENV.AUTH_FAILED_REDIRECT_PATH),
       session: false,
     }),
+    function (req: RequestWithUser, res: Response) {
+      const url = new URL(createClientUrl(ENV.AUTH_SUCCESS_REDIRECT_PATH));
+      url.searchParams.set("redirect-id", sign({ id: req.user.id }));
+      res.redirect(url.toString());
+    },
   )
-  @Redirect(createClientUrl(ENV.AUTH_SUCCESS_REDIRECT_PATH))
   async googleLoginCallback() {
-    /* */
+    //
   }
 
   @Authorized()
