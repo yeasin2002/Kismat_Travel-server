@@ -1,5 +1,5 @@
 import { AirportsService } from "@services/airports.service";
-import { Authorized, Controller, Get, QueryParam } from "routing-controllers";
+import { Controller, Get, QueryParam } from "routing-controllers";
 import { Service } from "typedi";
 
 @Controller("/airports")
@@ -7,7 +7,6 @@ import { Service } from "typedi";
 export class AirportController {
   constructor(public airportService: AirportsService) {}
 
-  @Authorized()
   @Get()
   public async getAirports(@QueryParam("q") search: string, @QueryParam("docs-per-page") limit: number) {
     return await this.airportService.getAirports(search, limit);

@@ -4,13 +4,14 @@ import { HttpException } from "@exceptions/http.exception";
 import { Modify } from "@interfaces/util.interface";
 import { ErrorMiddleware } from "@middlewares/error.middleware";
 import { PassportGoogleStrategy, PassportLocalStrategy, deserializeUser, serializeUser } from "@middlewares/passport.middleware";
+import { verify } from "@utils/jwt";
 import { logger, stream } from "@utils/logger";
 import { defaultMetadataStorage } from "class-transformer/cjs/storage";
 import { validationMetadatasToSchemas } from "class-validator-jsonschema";
 import compression from "compression";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import express from "express";
+import express, { Request } from "express";
 import helmet from "helmet";
 import hpp from "hpp";
 import morgan from "morgan";
@@ -97,20 +98,18 @@ export class App {
       defaultErrorHandler: false,
       routePrefix: "/api/v1",
 
-      authorizationChecker: ({ request }: Modify<Action, { request: Express.Request }>) => {
-        if (
-          request.isAuthenticated &&
-          request.isAuthenticated() &&
-          typeof request.user === "object" &&
-          request.user !== null &&
-          !Array.isArray(request.user) &&
-          "email" in request.user &&
-          "password" in request.user
-        ) {
-          return true;
-        }
+      authorizationChecker: async ({ request }: Modify<Action, { request: Request }>) => {
+        const auth = request.headers.authorization;
+        if (!auth || (auth && !auth.startsWith("Bearer "))) throw new HttpException(401, "Authentication required");
 
-        throw new HttpException(401, "Authentication required");
+        const validation = verify<{ id: string }>(auth.replace("Bearer ", ""));
+        if (!validation.valid) throw new HttpException(401, "Authentication required");
+
+        const User = await db.Users.findByPk(validation.id);
+        if (!User) throw new HttpException(401, "Authentication required");
+
+        request.user = User.toJSON();
+        return true;
       },
 
       currentUserChecker: action => action.request.user,
