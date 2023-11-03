@@ -18,6 +18,12 @@ import { Service } from "typedi";
 export class AuthController {
   constructor(public authService: AuthService) {}
 
+  @Authorized()
+  @Get("/current")
+  currentUser(@CurrentUser() user: User) {
+    return user;
+  }
+
   @Post("/signup")
   @UseBefore(ValidationMiddleware(CreateUserDto))
   @HttpCode(201)
@@ -25,17 +31,9 @@ export class AuthController {
     if (req.isAuthenticated()) throw new HttpException(403, "User already login!");
 
     const newUser = await this.authService.signup(userData);
+    delete newUser.password;
 
-    return new Promise<any>((resolve, reject) => {
-      req.login(newUser, err => {
-        if (err) {
-          reject({ message: "Authentication failed" });
-        } else {
-          delete newUser.password;
-          resolve(newUser);
-        }
-      });
-    });
+    return { auth: sign({ id: newUser.id }), user: newUser };
   }
 
   @Post("/signin")

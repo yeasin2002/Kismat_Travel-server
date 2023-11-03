@@ -20,6 +20,7 @@ export const ValidationMiddleware = (type: any, skipMissingProperties = false, w
         next();
       })
       .catch((errors: ValidationError[]) => {
+        console.log(errors);
         const message = errors.map((error: ValidationError) => Object.values(error.constraints)).join(", ");
         next(new HttpException(400, message));
       });

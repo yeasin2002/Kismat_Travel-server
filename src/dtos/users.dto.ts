@@ -9,15 +9,14 @@ export class UserPasswordDto {
 }
 
 export class SingInUserDto extends UserPasswordDto {
-  @IsNotEmpty()
   @IsEmail()
+  @IsNotEmpty()
   public email: string;
 }
 
 export class CreateUserDto extends SingInUserDto {
   @IsString()
   @IsNotEmpty()
-  @MaxLength(32)
   public name: string;
 }
 
