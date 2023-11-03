@@ -10,7 +10,7 @@ export function configureEnv() {
     SECRET_KEY: str({ devDefault: "secretKey" }),
 
     ORIGIN: str({ devDefault: "*" }),
-    CREDENTIALS: bool({ default: true }),
+    CREDENTIALS: bool({ default: false }),
 
     DATABASE_NAME: str({ devDefault: "fly-hub-development" }),
     DATABASE_USER: str({ devDefault: "root" }),
@@ -24,7 +24,7 @@ export function configureEnv() {
 
     CLIENT_BASE_URL: str({ devDefault: "http://localhost:3000" }),
     AUTH_SUCCESS_REDIRECT_PATH: str({ default: "/" }),
-    AUTH_FAILED_REDIRECT_PATH: str({ default: "/login" }),
+    AUTH_FAILED_REDIRECT_PATH: str({ default: "/signin" }),
 
     LOG_FORMAT: str({ devDefault: "dev", default: "combined" }),
     LOG_DIR: str({ default: "logs" }),

@@ -6,7 +6,7 @@ import { ValidationMiddleware } from "@middlewares/validation.middleware";
 import { AuthService } from "@services/auth.service";
 import { body } from "@utils/swagger";
 import passport from "passport";
-import { Authorized, Body, Controller, CurrentUser, Get, HttpCode, Post, Put, Req, UseBefore } from "routing-controllers";
+import { Authorized, Body, Controller, CurrentUser, Get, HttpCode, Post, Put, Redirect, Req, UseBefore } from "routing-controllers";
 import { OpenAPI } from "routing-controllers-openapi";
 import { Service } from "typedi";
 
@@ -35,26 +35,33 @@ export class AuthController {
     });
   }
 
-  @Post("/singin")
-  @UseBefore(ValidationMiddleware(SingInUserDto), passport.authenticate("local"))
+  @Post("/signin")
+  @UseBefore(ValidationMiddleware(SingInUserDto), passport.authenticate("local", { session: false }))
   @OpenAPI(body("SingInUserDto"))
   async logIn(@CurrentUser() user: User) {
     return this.authService.login(user);
   }
 
   @Get("/google")
-  @UseBefore(
-    passport.authenticate("google", {
-      successRedirect: createClientUrl(ENV.AUTH_SUCCESS_REDIRECT_PATH),
-      failureRedirect: createClientUrl(ENV.AUTH_FAILED_REDIRECT_PATH),
-    }),
-  )
+  @UseBefore(passport.authenticate("google", { session: false }))
   async googleLogin(@CurrentUser() user: User) {
     return this.authService.login(user);
   }
 
+  @Get("/google/callback")
+  @UseBefore(
+    passport.authenticate("google", {
+      failureRedirect: createClientUrl(ENV.AUTH_FAILED_REDIRECT_PATH),
+      session: false,
+    }),
+  )
+  @Redirect(createClientUrl(ENV.AUTH_SUCCESS_REDIRECT_PATH))
+  async googleLoginCallback() {
+    /* */
+  }
+
   @Authorized()
-  @Post("/singout")
+  @Post("/signout")
   async logOut(@Req() req: Express.Request) {
     return await new Promise<any>((resolve, reject) => {
       req.logOut(err => {

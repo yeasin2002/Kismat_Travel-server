@@ -8,10 +8,9 @@ import { logger, stream } from "@utils/logger";
 import { defaultMetadataStorage } from "class-transformer/cjs/storage";
 import { validationMetadatasToSchemas } from "class-validator-jsonschema";
 import compression from "compression";
-import createSequelizeStore from "connect-session-sequelize";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 import express from "express";
-import session from "express-session";
 import helmet from "helmet";
 import hpp from "hpp";
 import morgan from "morgan";
@@ -64,25 +63,29 @@ export class App {
 
   private initializeMiddlewares() {
     this.app.use(morgan(ENV.LOG_FORMAT, { stream }));
+    this.app.use(
+      cors({
+        origin: ENV.ORIGIN,
+        credentials: ENV.CREDENTIALS,
+      }),
+    );
     this.app.use(hpp());
     this.app.use(helmet());
     this.app.use(compression());
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(cookieParser());
-    this.app.use(session({ secret: ENV.SECRET_KEY, resave: true, saveUninitialized: true, store: this.getSessionStore() }));
     this.app.use(passport.initialize());
-    this.app.use(passport.session());
-  }
-
-  private getSessionStore() {
-    const SequelizeStore = createSequelizeStore(session.Store);
-    return new SequelizeStore({ db: db.sequelize });
+    this.app.use((req, _, next) => {
+      console.log(req.user, "watching user");
+      console.log(req.cookies, "watching cookies");
+      next();
+    });
   }
 
   private initializePassport() {
-    passport.use(PassportLocalStrategy);
     passport.use(PassportGoogleStrategy);
+    passport.use(PassportLocalStrategy);
 
     passport.serializeUser(serializeUser);
     passport.deserializeUser(deserializeUser);
@@ -90,11 +93,6 @@ export class App {
 
   private initializeRoutes(controllers: Function[]) {
     useExpressServer(this.app, {
-      cors: {
-        origin: ENV.ORIGIN,
-        credentials: ENV.CREDENTIALS,
-      },
-
       controllers: controllers,
       defaultErrorHandler: false,
       routePrefix: "/api/v1",

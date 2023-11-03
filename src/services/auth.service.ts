@@ -3,6 +3,7 @@ import { CreateUserDto, UpdatePasswordDto } from "@dtos/users.dto";
 import { HttpException } from "@exceptions/http.exception";
 import { User } from "@interfaces/users.interface";
 import { compare } from "@utils/encryption";
+import { sign } from "@utils/jwt";
 import { Service } from "typedi";
 
 @Service()
@@ -15,7 +16,8 @@ export class AuthService {
   }
 
   public async login(user: User) {
-    return user;
+    user && user.password && delete user.password;
+    return { user, auth: sign({ id: user.id }) };
   }
 
   public async logout() {

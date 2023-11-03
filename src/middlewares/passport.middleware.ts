@@ -14,6 +14,7 @@ export const PassportLocalStrategy = new LocalStrategy(
   async (email, password, done) => {
     try {
       const user = await db.Users.unscoped().findOne({ where: { email } });
+      console.log(user);
       if (user && compare(password, user.password)) return done(null, user.toJSON());
       done(new HttpException(403, "Incorrect email or password"));
     } catch (error) {
