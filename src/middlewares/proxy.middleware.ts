@@ -1,7 +1,12 @@
+import { getAuthorizeHeader } from "@utils/authorize";
 import { NextFunction, Request, Response } from "express";
 
-export function modifyProxy(req: Request, _: Response, next: NextFunction) {
-  req.headers["Authorization"] = "Bearer YourAccessToken";
-
-  next();
+export async function modifyProxy(req: Request, res: Response, next: NextFunction) {
+  try {
+    const authorization = await getAuthorizeHeader();
+    req.headers["Authorization"] = `Bearer ${authorization}`;
+    next();
+  } catch (error) {
+    next(error);
+  }
 }

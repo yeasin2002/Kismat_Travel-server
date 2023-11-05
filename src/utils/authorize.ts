@@ -6,7 +6,7 @@ import axios from "axios";
 import * as fs from "fs";
 import { dirname, join } from "path";
 
-const HEADER_STORE = join(__dirname, "../credentials/auth.json");
+const HEADER_STORE = join(__dirname, "../../credentials/auth.json");
 
 export async function getFlyHubAuth() {
   const dbRes = await db.Credentials.findOne({ where: { key: "@api-key" } });
@@ -20,7 +20,7 @@ export async function getFlyHubAuth() {
     );
 
     return data;
-  } catch (error) {
+  } catch {
     throw new HttpException(5000, "Authentication error fly-hub");
   }
 }
