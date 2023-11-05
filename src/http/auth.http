@@ -1,27 +1,25 @@
-# baseURL
-@baseURL = http://localhost:3000
+@baseURL = http://localhost:5000/api/v1/auth
 
-###
-# User Signup
+### User Signup
 POST {{ baseURL }}/signup
 Content-Type: application/json
 
 {
+    "name": "Imam",
     "email": "example@email.com",
-	"password": "password"
+    "password": "password"
 }
 
-###
-# User Login
-POST {{ baseURL }}/login
+
+### User Signin
+POST {{ baseURL }}/signin
 Content-Type: application/json
 
 {
     "email": "example@email.com",
-	"password": "password"
+    "password": "password"
 }
 
-###
-# User Logout
-POST {{ baseURL }}/logout
-Content-Type: application/json
+
+### Google Signin
+GET {{baseURL}}/google
