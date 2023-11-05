@@ -28,6 +28,8 @@ export function configureEnv() {
 
     LOG_FORMAT: str({ devDefault: "dev", default: "combined" }),
     LOG_DIR: str({ default: "logs" }),
+
+    FLY_HUB_API_BASE_URL: str({ devDefault: "https://api.sandbox.flyhub.com/api/v1" }),
   });
 }
 
