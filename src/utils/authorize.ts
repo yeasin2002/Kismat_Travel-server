@@ -51,7 +51,7 @@ export function checkExpirationAndRetrieveToken() {
     if (expirationDate > new Date()) {
       return { auth: data.token as string, valid: true } as const;
     }
-  } finally {
+  } catch {
     return { auth: null as null, valid: false } as const;
   }
 }
