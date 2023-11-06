@@ -5,6 +5,7 @@ import { Service } from "typedi";
 import { compare } from "bcryptjs";
 import generateSessionCode from "@utils/session";
 import { sign } from "@utils/jwt";
+import { NextFunction, Request, Response } from "express";
 
 // import { Delete } from "routing-controllers";
 

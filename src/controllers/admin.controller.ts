@@ -6,6 +6,11 @@ import { Body, Controller, Res, Req, Delete, Get, Param, Put, UseBefore, Post } 
 import { OpenAPI } from "routing-controllers-openapi";
 import { Service } from "typedi";
 import { Response, Request } from "express";
+import { isAdmin } from "@middlewares/isAdmin.middleware";
+
+interface CustomRequest extends Request {
+  CurrentAdmin: any;
+}
 
 @Controller("/admins")
 @Service()
@@ -25,5 +30,12 @@ export class AdminController {
     //TODO: make a email for wrong login request.
     console.log("🚀: ", userIP);
     return User;
+  }
+
+  @Post("/auth")
+  @UseBefore(isAdmin)
+  @OpenAPI({ summary: "Test login User" })
+  async AdminAuth(@Body() BodyData: any, @Res() response: Response, @Req() request: CustomRequest) {
+    return request.CurrentAdmin;
   }
 }
