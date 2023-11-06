@@ -1,5 +1,6 @@
 import { ENV } from "@config";
 import { AirportModel } from "@models/airports.model";
+import { CredentialModel } from "@models/credential.model";
 import { UserModel } from "@models/users.model";
 import { AdminModel } from "@models/admin.model";
 import { logger } from "@utils/logger";
@@ -42,5 +43,6 @@ export const db = {
   Users: UserModel(sequelize),
   Airports: AirportModel(sequelize),
   Admin: AdminModel(sequelize),
+  Credentials: CredentialModel(sequelize),
   sequelize,
 } as const;

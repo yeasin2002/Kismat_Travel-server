@@ -4,6 +4,7 @@ import { HttpException } from "@exceptions/http.exception";
 import { Modify } from "@interfaces/util.interface";
 import { ErrorMiddleware } from "@middlewares/error.middleware";
 import { PassportGoogleStrategy, PassportLocalStrategy } from "@middlewares/passport.middleware";
+import { gotToFlyHub } from "@utils/flyhub";
 import { verify } from "@utils/jwt";
 import { logger, stream } from "@utils/logger";
 import { defaultMetadataStorage } from "class-transformer/cjs/storage";
@@ -34,6 +35,7 @@ export class App {
 
     this.initializeServices();
     this.initializeMiddlewares();
+    this.initializeProxyServer();
     this.initializePassport();
     this.initializeRoutes(Controllers);
     this.initializeSwagger(Controllers);
@@ -72,6 +74,10 @@ export class App {
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(cookieParser());
     this.app.use(passport.initialize());
+  }
+
+  private initializeProxyServer() {
+    this.app.all("/private/*", gotToFlyHub);
   }
 
   private initializePassport() {
