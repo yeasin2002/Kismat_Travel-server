@@ -1,11 +1,8 @@
-import { LoginAdminDto } from "@dtos/admins.dto";
-import { User } from "@interfaces/users.interface";
-import { ValidationMiddleware } from "@middlewares/validation.middleware";
 import { AdminService } from "@services/admins.service";
-import { Body, Controller, Res, Req, Delete, Get, Param, Put, UseBefore, Post } from "routing-controllers";
+import { Request, Response } from "express";
+import { Body, Controller, Post, Req, Res } from "routing-controllers";
 import { OpenAPI } from "routing-controllers-openapi";
 import { Service } from "typedi";
-import { Response, Request } from "express";
 
 @Controller("/admins")
 @Service()
