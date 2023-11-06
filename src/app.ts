@@ -4,7 +4,7 @@ import { HttpException } from "@exceptions/http.exception";
 import { Modify } from "@interfaces/util.interface";
 import { ErrorMiddleware } from "@middlewares/error.middleware";
 import { PassportGoogleStrategy, PassportLocalStrategy } from "@middlewares/passport.middleware";
-import { modifyProxy } from "@middlewares/proxy.middleware";
+import { gotToFlyHub } from "@utils/flyhub";
 import { verify } from "@utils/jwt";
 import { logger, stream } from "@utils/logger";
 import { defaultMetadataStorage } from "class-transformer/cjs/storage";
@@ -15,7 +15,6 @@ import cors from "cors";
 import express, { Request } from "express";
 import helmet from "helmet";
 import hpp from "hpp";
-import { createProxyMiddleware } from "http-proxy-middleware";
 import morgan from "morgan";
 import passport from "passport";
 import "reflect-metadata";
@@ -78,36 +77,7 @@ export class App {
   }
 
   private initializeProxyServer() {
-    this.app.use("/private", modifyProxy);
-    this.app.use(
-      "/private",
-      createProxyMiddleware({
-        target: ENV.FLY_HUB_API_BASE_URL,
-        changeOrigin: true,
-        pathRewrite: {
-          "^/private": "",
-        },
-
-        onProxyReq: function onProxyReq(proxyReq, req) {
-          console.log(`\x1b[33m[${req.method}] ${req.path} ->  ${ENV.FLY_HUB_API_BASE_URL.replace(/\/$/, "")}${proxyReq.path}\x1b[0m`);
-        },
-
-        onProxyRes: (proxyRes, req) => {
-          if (
-            "req" in proxyRes &&
-            typeof proxyRes.req === "object" &&
-            "path" in proxyRes.req &&
-            "host" in proxyRes.req &&
-            "protocol" in proxyRes.req
-          ) {
-            const { method, path } = req;
-            const status = proxyRes.statusCode;
-            const { protocol, host, path: p } = proxyRes.req;
-            console.log(`\x1b[34m[${method}] [${status}] ${path} -> ${protocol}//${host}${p}\x1b[0m`);
-          }
-        },
-      }),
-    );
+    this.app.all("/private/*", gotToFlyHub);
   }
 
   private initializePassport() {
