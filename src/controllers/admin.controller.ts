@@ -24,6 +24,6 @@ export class AdminController {
     const userIP = request.ip;
     //TODO: make a email for wrong login request.
     console.log("🚀: ", userIP);
-    return User.value;
+    return User;
   }
 }
