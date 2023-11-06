@@ -7,6 +7,7 @@ export interface AdminModel extends Model<InferAttributes<AdminModel>, InferCrea
   phone: string;
   email: string;
   password: string;
+  sessions: string;
   photo: CreationOptional<string>;
   role: "SuperAdmin" | "Employee";
 }
@@ -52,6 +53,14 @@ export function AdminModel(sequelize: Sequelize) {
         type: DataTypes.STRING(255),
         set(value: string) {
           this.setDataValue("password", hash(value));
+        },
+      },
+
+      sessions: {
+        allowNull: true,
+        type: DataTypes.STRING(255),
+        set(value: string) {
+          this.setDataValue("sessions", hash(value));
         },
       },
     },

@@ -8,13 +8,13 @@ export class AdminPasswordDto {
   public password: string;
 }
 
-export class SingInAdminDto extends AdminPasswordDto {
+export class LoginAdminDto extends AdminPasswordDto {
   @IsEmail()
   @IsNotEmpty()
   public email: string;
 }
 
-export class CreateAdminDto extends SingInAdminDto {
+export class CreateAdminDto extends LoginAdminDto {
   @IsString()
   @IsNotEmpty()
   public name: string;

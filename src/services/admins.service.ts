@@ -3,7 +3,10 @@ import { CreateAdminDto } from "@dtos/admins.dto";
 import { HttpException } from "@exceptions/http.exception";
 import { Service } from "typedi";
 import { compare } from "bcryptjs";
-import { Delete } from "routing-controllers";
+import generateSessionCode from "@utils/session";
+import { sign } from "@utils/jwt";
+
+// import { Delete } from "routing-controllers";
 
 @Service()
 export class AdminService {
@@ -53,9 +56,19 @@ export class AdminService {
     if (!AdminInDatabase) throw new HttpException(401, "No User Wrong Credential");
 
     if (await compare(password, AdminInDatabase.toJSON().password)) {
+      const session = generateSessionCode(15);
+      await db.Admin.update(
+        { sessions: session },
+        {
+          where: {
+            email,
+          },
+        },
+      );
+
       const Payload = AdminInDatabase.toJSON();
       delete Payload.password;
-      return Payload;
+      return { session: session, jwt: sign(Payload), value: Payload };
     } else {
       throw new HttpException(401, "Wrong Credential");
     }
