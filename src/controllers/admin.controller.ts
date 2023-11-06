@@ -4,6 +4,14 @@ import { Body, Controller, Post, Req, Res } from "routing-controllers";
 import { OpenAPI } from "routing-controllers-openapi";
 import { Service } from "typedi";
 
+import { Response, Request } from "express";
+import { isAdmin } from "@middlewares/isAdmin.middleware";
+
+interface CustomRequest extends Request {
+  CurrentAdmin: any;
+}
+
+
 @Controller("/admins")
 @Service()
 export class AdminController {
@@ -21,6 +29,13 @@ export class AdminController {
     const userIP = request.ip;
     //TODO: make a email for wrong login request.
     console.log("🚀: ", userIP);
-    return User.value;
+    return User;
+  }
+
+  @Post("/auth")
+  @UseBefore(isAdmin)
+  @OpenAPI({ summary: "Test login User" })
+  async AdminAuth(@Body() BodyData: any, @Res() response: Response, @Req() request: CustomRequest) {
+    return request.CurrentAdmin;
   }
 }
