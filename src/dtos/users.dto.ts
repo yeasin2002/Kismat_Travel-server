@@ -8,6 +8,12 @@ export class UserPasswordDto {
   public password: string;
 }
 
+export class UserNameDto {
+  @IsString()
+  @IsNotEmpty()
+  public name: string;
+}
+
 export class SingInUserDto extends UserPasswordDto {
   @IsEmail()
   @IsNotEmpty()
@@ -25,5 +31,5 @@ export class UpdatePasswordDto extends UserPasswordDto {
   @IsNotEmpty()
   @MinLength(6)
   @MaxLength(32)
-  public "current-password": string;
+  public current: string;
 }
