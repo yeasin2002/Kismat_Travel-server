@@ -1,7 +1,9 @@
 import { UpdatePasswordDto, UserNameDto } from "@dtos/users.dto";
+import { User } from "@interfaces/users.interface";
 import { ValidationMiddleware } from "@middlewares/validation.middleware";
 import { UserService } from "@services/users.service";
-import { Authorized, Body, Controller, Delete, Get, Param, Patch, Put, UseBefore } from "routing-controllers";
+import { configureMulterOption } from "@utils/multer";
+import { Authorized, Body, Controller, CurrentUser, Delete, Get, Patch, Post, Put, UploadedFile, UseBefore } from "routing-controllers";
 import { OpenAPI } from "routing-controllers-openapi";
 import { Service } from "typedi";
 
@@ -20,30 +22,41 @@ export class UserController {
   @Authorized()
   @Get("/:id")
   @OpenAPI({ summary: "Return find a user" })
-  async getUserById(@Param("id") userId: string) {
-    return await this.userService.findUserById(userId);
+  async getUserById(@CurrentUser() user: User) {
+    delete user.password;
+    return user;
   }
 
   @Authorized()
   @Patch("/:id")
   @UseBefore(ValidationMiddleware(UserNameDto))
   @OpenAPI({ summary: "Change user name" })
-  async changeName(@Param("id") userId: string, @Body() body: UserNameDto) {
-    return await this.userService.changeName(userId, body.name);
+  async changeName(@CurrentUser() user: User, @Body() body: UserNameDto) {
+    return await this.userService.changeName(user.id, body.name);
   }
 
   @Authorized()
   @Put("/:id")
   @UseBefore(ValidationMiddleware(UpdatePasswordDto))
   @OpenAPI({ summary: "Change user name" })
-  async changePassword(@Param("id") userId: string, @Body() body: UpdatePasswordDto) {
-    return await this.userService.changePassword(userId, body);
+  async changePassword(@CurrentUser() user: User, @Body() body: UpdatePasswordDto) {
+    return await this.userService.changePassword(user.id, body);
+  }
+
+  @Authorized()
+  @Post("/:id")
+  @OpenAPI({ summary: "Upload profile picture" })
+  async changePhotoUrl(
+    @UploadedFile("profile", { options: configureMulterOption({ path: __dirname }) }) File: Express.Multer.File,
+    @CurrentUser() user: User,
+  ) {
+    return await this.userService.changePhotoUrl(user.id, File.filename);
   }
 
   @Authorized()
   @Delete("/:id")
   @OpenAPI({ summary: "Delete a user" })
-  async deleteUser(@Param("id") userId: string) {
-    return await this.userService.deleteUser(userId);
+  async deleteUser(@CurrentUser() user: User) {
+    return await this.userService.deleteUser(user.id);
   }
 }

@@ -40,6 +40,16 @@ export class UserService {
     return { success: true };
   }
 
+  public async changePhotoUrl(id: string, filename: string) {
+    const findUser = await db.Users.findByPk(id);
+    if (!findUser) throw new HttpException(409, "User doesn't exist");
+
+    findUser.photoUrl = filename;
+    await findUser.save();
+
+    return findUser.toJSON();
+  }
+
   public async deleteUser(userId: string) {
     const findUser = await db.Users.findByPk(userId);
     if (!findUser) throw new HttpException(409, "User doesn't exist");

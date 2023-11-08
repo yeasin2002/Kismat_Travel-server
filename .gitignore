@@ -1,3 +1,7 @@
+# every file & folder start with __ ignore
+__*
+
+
 # Logs
 logs
 *.log
