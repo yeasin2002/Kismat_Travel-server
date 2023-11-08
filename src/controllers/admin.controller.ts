@@ -1,8 +1,5 @@
-import { LoginAdminDto } from "@dtos/admins.dto";
-import { User } from "@interfaces/users.interface";
-import { ValidationMiddleware } from "@middlewares/validation.middleware";
 import { AdminService } from "@services/admins.service";
-import { Body, Controller, Res, Req, Delete, Get, Param, Put, UseBefore, Post } from "routing-controllers";
+import { Body, Controller, Res, Req, UseBefore, Post } from "routing-controllers";
 import { OpenAPI } from "routing-controllers-openapi";
 import { Service } from "typedi";
 import { Response, Request } from "express";
@@ -37,5 +34,11 @@ export class AdminController {
   @OpenAPI({ summary: "Test login User" })
   async AdminAuth(@Body() BodyData: any, @Res() response: Response, @Req() request: CustomRequest) {
     return request.CurrentAdmin;
+  }
+
+  @Post("/logout")
+  @UseBefore(isAdmin)
+  async AdminLogout(@Res() response, @Req() request: CustomRequest) {
+    return this.AdminService.logout(request);
   }
 }
