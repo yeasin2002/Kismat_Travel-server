@@ -14,6 +14,10 @@ export async function gotToFlyHub(req: Request, res: Response, next: NextFunctio
 
     const token = await getAuthorizeHeader();
 
+    if (typeof req.body === "object" && !Array.isArray(req.body) && req.body !== null) {
+      req.body.EndUserIp = req.ip;
+    }
+
     const axiosResponse = await axios({
       method: req.method,
       url: targetURL.toString(),
