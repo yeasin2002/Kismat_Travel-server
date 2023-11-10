@@ -10,7 +10,7 @@ interface CustomRequest extends Request {
 export const isAdmin = async (req: CustomRequest, res: Response, next: NextFunction) => {
   try {
     const Auth = req.body.Headers;
-    if (!Auth.key && !Auth.sessions) {
+    if (!Auth?.key && !Auth?.sessions) {
       throw new HttpException(406, "unauthorized request");
     }
     const AdminDecoded: any = verify(Auth.key);

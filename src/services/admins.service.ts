@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { db } from "@db";
 import { CreateAdminDto } from "@dtos/admins.dto";
 import { HttpException } from "@exceptions/http.exception";
@@ -6,8 +7,6 @@ import { compare } from "bcryptjs";
 import generateSessionCode from "@utils/session";
 import { sign } from "@utils/jwt";
 import { NextFunction, Request, Response } from "express";
-
-// import { Delete } from "routing-controllers";
 
 @Service()
 export class AdminService {
@@ -73,5 +72,20 @@ export class AdminService {
     } else {
       throw new HttpException(401, "Wrong Credential");
     }
+  }
+
+  public async logout(request: any) {
+    const Admin_Req = request.CurrentAdmin;
+    await db.Admin.update(
+      {
+        sessions: "",
+      },
+      {
+        where: {
+          id: Admin_Req.id,
+        },
+      },
+    );
+    return true;
   }
 }
