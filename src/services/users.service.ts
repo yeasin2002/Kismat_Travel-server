@@ -1,6 +1,7 @@
 import { db } from "@db";
-import { CreateUserDto } from "@dtos/users.dto";
+import { UpdatePasswordDto } from "@dtos/users.dto";
 import { HttpException } from "@exceptions/http.exception";
+import { compare } from "@utils/encryption";
 import { Service } from "typedi";
 
 @Service()
@@ -17,17 +18,36 @@ export class UserService {
     throw new HttpException(409, "User doesn't exist");
   }
 
-  public async updateUser(userId: string, userData: Omit<CreateUserDto, "email">) {
-    const findUser = await db.Users.unscoped().findByPk(userId);
+  public async changeName(id: string, name: string) {
+    const findUser = await db.Users.findByPk(id);
     if (!findUser) throw new HttpException(409, "User doesn't exist");
 
-    findUser.password = userData.password;
+    findUser.name = name;
+    findUser.save();
+
+    return findUser.toJSON();
+  }
+
+  public async changePassword(id: string, credentials: UpdatePasswordDto) {
+    const findUser = await db.Users.unscoped().findByPk(id);
+
+    if (!findUser) throw new HttpException(409, "User doesn't exist");
+    if (!compare(credentials.current, findUser.password)) throw new HttpException(401, "Authentication failed");
+
+    findUser.password = credentials.password;
     await findUser.save();
 
-    const userJSON = findUser.toJSON();
-    delete userJSON.password;
+    return { success: true };
+  }
 
-    return userJSON;
+  public async changePhotoUrl(id: string, filename: string) {
+    const findUser = await db.Users.findByPk(id);
+    if (!findUser) throw new HttpException(409, "User doesn't exist");
+
+    findUser.photoUrl = filename;
+    await findUser.save();
+
+    return findUser.toJSON();
   }
 
   public async deleteUser(userId: string) {
@@ -36,6 +56,6 @@ export class UserService {
 
     await findUser.destroy();
 
-    return findUser.toJSON();
+    return { success: true };
   }
 }
