@@ -3,6 +3,7 @@ import { db } from "@db";
 import { HttpException } from "@exceptions/http.exception";
 import { joinUrl } from "@utils/joinUrl";
 import axios from "axios";
+import { isObject } from "class-validator";
 import * as fs from "fs";
 import { dirname, join } from "path";
 
@@ -21,7 +22,7 @@ export async function getFlyHubAuth() {
 
     return data;
   } catch {
-    throw new HttpException(5000, "Authentication error fly-hub");
+    throw new HttpException(500, "Authentication error fly-hub");
   }
 }
 
@@ -48,9 +49,7 @@ export function checkExpirationAndRetrieveToken() {
     const data = JSON.parse(fs.readFileSync(HEADER_STORE, "utf8"));
     const expirationDate = new Date(data.expire);
 
-    if (expirationDate > new Date()) {
-      return { auth: data.token as string, valid: true } as const;
-    }
+    return { auth: data.token as string, valid: (expirationDate > new Date()) as true } as const;
   } catch {
     return { auth: null as null, valid: false } as const;
   }
@@ -64,5 +63,7 @@ export async function getAuthorizeHeader(): Promise<string> {
   }
 
   const authInfo = await getFlyHubAuth();
+
+  if (isObject(authInfo) && typeof authInfo.TokenId !== "string") throw new HttpException(500, "Token generation failed");
   return saveDataWithExpiration(authInfo.TokenId, authInfo.ExpireTime);
 }
