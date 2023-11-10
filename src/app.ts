@@ -77,7 +77,7 @@ export class App {
   }
 
   private initializeProxyServer() {
-    this.app.all("/private/*", gotToFlyHub);
+    this.app.all("/api/v1/private/*", gotToFlyHub);
   }
 
   private initializePassport() {
