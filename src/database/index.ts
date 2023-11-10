@@ -3,6 +3,7 @@ import { AirportModel } from "@models/airports.model";
 import { CredentialModel } from "@models/credential.model";
 import { UserModel } from "@models/users.model";
 import { AdminModel } from "@models/admin.model";
+import { Payment_gatewayModel } from "@models/payment_gateway.model";
 import { logger } from "@utils/logger";
 import { Sequelize } from "sequelize";
 
@@ -43,6 +44,7 @@ export const db = {
   Users: UserModel(sequelize),
   Airports: AirportModel(sequelize),
   Admin: AdminModel(sequelize),
+  Payment_gateway: Payment_gatewayModel(sequelize),
   Credentials: CredentialModel(sequelize),
   sequelize,
 } as const;
