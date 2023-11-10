@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import axios from "axios";
+import { db } from "@db";
+
+import { ParseBites } from "@utils/encryption";
 
 // validate function
 function verifyAamarpayData(data) {
@@ -33,6 +36,21 @@ function isValidEmail(email) {
   return emailRegex.test(email);
 }
 
+async function getData() {
+  try {
+    const data = await db.Payment_gateway.findOne();
+    if (data) {
+      data.store_id = ParseBites(data.store_id);
+      return data;
+    }
+    throw "Could not find";
+  } catch (error) {
+    return error;
+  }
+}
+function generateUniqueString() {
+  return `${new Date().getTime()}_${Math.random().toString(36).substring(2, 32)}`;
+}
 // Define the type for the request data
 export interface AamarpayRequestData {
   amount: string;
@@ -41,6 +59,7 @@ export interface AamarpayRequestData {
   cus_name: string;
   cus_email: string;
   cus_phone: string;
+  tran_id: string;
   cus_city?: string;
   cus_state?: string;
   cus_country?: string;
@@ -51,7 +70,7 @@ export interface AamarpayRequestData {
 }
 export interface AamarpayPayload extends AamarpayRequestData {
   store_id: string;
-  tran_id: string;
+
   success_url: string;
   fail_url: string;
   cancel_url: string;
@@ -60,17 +79,22 @@ export interface AamarpayPayload extends AamarpayRequestData {
 }
 
 const Payment = async (requestData: AamarpayRequestData) => {
-  const apiUrl = "https://sandbox.aamarpay.com/jsonpost.php";
+  const Payment_data = await getData();
+
+  let apiUrl = "https://sandbox.aamarpay.com/jsonpost.php";
+
+  if (Payment_data.status === "LIVE") {
+    apiUrl = "";
+  }
 
   try {
     const requestData_pay: AamarpayPayload = {
       ...verifyAamarpayData(requestData),
-      store_id: "aamarpaytest",
-      tran_id: "123121414",
-      signature_key: "dbb74894e82415a2f7ff0ec3a97e4183",
-      success_url: "http://www.merchantdomain.com/suc esspage.html",
-      fail_url: "http://www.merchantdomain.com/faile dpage.html",
-      cancel_url: "http://www.merchantdomain.com/can cellpage.html",
+      store_id: Payment_data.store_id,
+      signature_key: generateUniqueString(),
+      success_url: "http://www.merchantdomain.com/sucesspage.html",
+      fail_url: "http://www.merchantdomain.com/failedpage.html",
+      cancel_url: "http://www.merchantdomain.com/cancellpage.html",
       type: "json",
     };
 
