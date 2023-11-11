@@ -48,8 +48,8 @@ const Payment_gateway = Payment_gatewayModel(sequelize);
 const Credentials = CredentialModel(sequelize);
 const Bookings = BookingModel(sequelize);
 
-Users.hasMany(Bookings, { as: "Book", onDelete: "cascade" });
-Bookings.belongsTo(Users, { foreignKey: "userId", as: "User" });
+Users.hasMany(Bookings, { as: "booking", onDelete: "cascade" });
+Bookings.belongsTo(Users, { foreignKey: "userId", as: "user" });
 
 export const db = {
   Users,

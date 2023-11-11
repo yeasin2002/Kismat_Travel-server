@@ -3,7 +3,7 @@ import { CreationOptional, DataTypes, ForeignKey, InferAttributes, InferCreation
 
 import { UserModel } from "@models/users.model";
 
-export interface BookingModel extends BelongsToMixin<UserModel, number, "User"> {}
+export interface BookingModel extends BelongsToMixin<UserModel, number, "user"> {}
 export interface BookingModel extends Model<InferAttributes<BookingModel>, InferCreationAttributes<BookingModel>> {
   id: CreationOptional<string>;
   bookingId: string;
