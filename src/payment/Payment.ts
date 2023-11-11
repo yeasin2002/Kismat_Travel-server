@@ -41,6 +41,8 @@ async function getData() {
     const data = await db.Payment_gateway.findOne();
     if (data) {
       data.store_id = ParseBites(data.store_id);
+      data.merchant_id = ParseBites(data.merchant_id);
+      data.signature_key = ParseBites(data.signature_key);
       return data;
     }
     throw "Could not find";
@@ -84,14 +86,14 @@ const Payment = async (requestData: AamarpayRequestData) => {
   let apiUrl = "https://sandbox.aamarpay.com/jsonpost.php";
 
   if (Payment_data.status === "LIVE") {
-    apiUrl = "";
+    apiUrl = "https://secure.aamarpay.com";
   }
 
   try {
     const requestData_pay: AamarpayPayload = {
       ...verifyAamarpayData(requestData),
       store_id: Payment_data.store_id,
-      signature_key: generateUniqueString(),
+      signature_key: Payment_data.signature_key,
       success_url: "http://www.merchantdomain.com/sucesspage.html",
       fail_url: "http://www.merchantdomain.com/failedpage.html",
       cancel_url: "http://www.merchantdomain.com/cancellpage.html",
