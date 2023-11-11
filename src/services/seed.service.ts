@@ -16,7 +16,9 @@ export class SeedService {
     }
     await db.Payment_gateway.create({
       status: "SANDBOX",
-      store_id: "NONE",
+      store_id: "aamarpaytest",
+      merchant_id: "aamarpaytest",
+      signature_key: "dbb74894e82415a2f7ff0ec3a97e4183",
     });
   }
 }
