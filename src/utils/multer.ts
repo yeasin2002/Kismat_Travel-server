@@ -1,4 +1,5 @@
 import { HttpException } from "@exceptions/http.exception";
+import { ensureFilePathExists } from "@utils/file";
 import multer, { FileFilterCallback, Options } from "multer";
 import { v4 as uuidv4 } from "uuid";
 
@@ -17,7 +18,7 @@ export const configureMulterOption = ({
 }: FileUploadOptions): Options => ({
   storage: multer.diskStorage({
     destination: (req: Express.Request, file: Express.Multer.File, callback: (error: Error | null, destination: string) => void) => {
-      callback(null, path);
+      callback(null, ensureFilePathExists(path));
     },
 
     filename: (req: Express.Request, file: Express.Multer.File, callback: (error: Error | null, filename: string) => void) => {
