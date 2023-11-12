@@ -43,8 +43,7 @@ export function Payment_gatewayModel(sequelize: Sequelize) {
     },
     status: {
       allowNull: false,
-      type: DataTypes.ENUM("LIVE", "SANDBOX"),
-      unique: true,
+      type: DataTypes.ENUM("LIVE", "SANDBOX", "OFF"),
     },
   });
 }

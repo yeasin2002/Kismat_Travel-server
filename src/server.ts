@@ -9,6 +9,10 @@ import { FlyhubController } from "@controllers/flyhub.controller";
 import { SeedController } from "@controllers/seed.controller";
 import { UserController } from "@controllers/users.controller";
 
+import { AdminController } from "@controllers/admin.controller";
+import { Payment_gatewayController } from "@controllers/payment.controller";
+
+
 configureEnv();
 
 const app = new App([
@@ -19,7 +23,11 @@ const app = new App([
   AdminController,
   FlyhubController,
   CredentialController,
+
+  Payment_gatewayController,
+
   BookingController,
+
 ]);
 
 app.listen();

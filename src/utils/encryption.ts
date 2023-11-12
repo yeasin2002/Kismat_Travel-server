@@ -11,7 +11,7 @@ export function compare(text: string, hash: string) {
 }
 
 export function bites(data: string) {
-  return CryptoJS.AES.encrypt(JSON.stringify(data), ENV.SECRET_KEY).toString();
+  return CryptoJS.AES.encrypt(data, ENV.SECRET_KEY).toString();
 }
 
 export function ParseBites(data: string) {
