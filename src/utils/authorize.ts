@@ -1,11 +1,12 @@
 import { ENV } from "@config";
 import { db } from "@db";
 import { HttpException } from "@exceptions/http.exception";
+import { ensureFilePathExists } from "@utils/file";
 import { joinUrl } from "@utils/joinUrl";
 import axios from "axios";
 import { isObject } from "class-validator";
 import * as fs from "fs";
-import { dirname, join } from "path";
+import { join } from "path";
 
 const HEADER_STORE = join(__dirname, "../../credentials/auth.json");
 
@@ -23,13 +24,6 @@ export async function getFlyHubAuth() {
     return data;
   } catch {
     throw new HttpException(500, "Authentication error fly-hub");
-  }
-}
-
-function ensureFilePathExists(filePath: string) {
-  const directory = dirname(filePath);
-  if (!fs.existsSync(directory)) {
-    fs.mkdirSync(directory, { recursive: true });
   }
 }
 
