@@ -7,9 +7,19 @@ import { FlyhubController } from "@controllers/flyhub.controller";
 import { SeedController } from "@controllers/seed.controller";
 import { UserController } from "@controllers/users.controller";
 import { AdminController } from "@controllers/admin.controller";
+import { Payment_gatewayController } from "@controllers/payment.controller";
 
 configureEnv();
 
-const app = new App([AuthController, UserController, SeedController, AirportController, AdminController, FlyhubController, CredentialController]);
+const app = new App([
+  AuthController,
+  UserController,
+  SeedController,
+  AirportController,
+  AdminController,
+  FlyhubController,
+  CredentialController,
+  Payment_gatewayController,
+]);
 
 app.listen();
