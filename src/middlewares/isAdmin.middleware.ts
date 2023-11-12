@@ -6,6 +6,7 @@ import { compare } from "bcryptjs";
 
 interface CustomRequest extends Request {
   CurrentAdmin: any;
+  AdminPassCheck: boolean;
 }
 export const isAdmin = async (req: CustomRequest, res: Response, next: NextFunction) => {
   try {
@@ -17,7 +18,7 @@ export const isAdmin = async (req: CustomRequest, res: Response, next: NextFunct
     if (!AdminDecoded.valid) {
       throw new HttpException(406, "Invalid request");
     }
-    const admin_in_database = await db.Admin.findByPk(AdminDecoded.id);
+    const admin_in_database = await db.Admin.unscoped().findByPk(AdminDecoded.id);
     if (!admin_in_database) {
       throw new HttpException(406, "Invalid request");
     }
@@ -25,6 +26,19 @@ export const isAdmin = async (req: CustomRequest, res: Response, next: NextFunct
     if (!verifySession) {
       throw new HttpException(406, "Invalid request");
     }
+
+    if (req.body.password) {
+      const passwordCompare = await compare(req.body.password, admin_in_database.password);
+
+      if (!passwordCompare) {
+        throw new HttpException(406, "Invalid credential");
+      } else {
+        req.AdminPassCheck = true;
+      }
+    } else {
+      req.AdminPassCheck = false;
+    }
+
     req.CurrentAdmin = admin_in_database.toJSON();
     next();
   } catch (error) {
