@@ -2,7 +2,9 @@ import { HasOneMixin } from "@interfaces/sequelize";
 import { BookingModel } from "@models/booking.model";
 import { hash } from "@utils/encryption";
 import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model, Sequelize } from "sequelize";
+import { PreBookingModel } from "./prebooking.model";
 
+export interface UserModel extends HasOneMixin<PreBookingModel, string, "prebooking"> {}
 export interface UserModel extends HasOneMixin<BookingModel, string, "booking"> {}
 export interface UserModel extends Model<InferAttributes<UserModel>, InferCreationAttributes<UserModel>> {
   id: CreationOptional<string>;

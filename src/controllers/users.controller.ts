@@ -8,7 +8,6 @@ import { Response } from "express";
 import { existsSync } from "fs";
 import { join } from "path";
 import { Authorized, Body, Controller, CurrentUser, Delete, Get, Param, Patch, Post, Put, Res, UploadedFile, UseBefore } from "routing-controllers";
-import { OpenAPI } from "routing-controllers-openapi";
 import { Service } from "typedi";
 import { isAdmin } from "@middlewares/isAdmin.middleware";
 
@@ -21,14 +20,12 @@ export class UserController {
 
   @Post()
   @UseBefore(isAdmin)
-  @OpenAPI({ summary: "Return a list of users" })
   async getUsers() {
     return await this.userService.findAllUser();
   }
 
   @Authorized()
   @Get("/:id")
-  @OpenAPI({ summary: "Return find a user" })
   async getUserById(@CurrentUser() user: User) {
     delete user.password;
     return user;
@@ -37,23 +34,20 @@ export class UserController {
   @Authorized()
   @Patch("/:id")
   @UseBefore(ValidationMiddleware(UserNameDto))
-  @OpenAPI({ summary: "Change user name" })
-  async changeName(@CurrentUser() user: User, @Body() body: UserNameDto) {
+  async changeUserName(@CurrentUser() user: User, @Body() body: UserNameDto) {
     return await this.userService.changeName(user.id, body.name);
   }
 
   @Authorized()
   @Put("/:id")
   @UseBefore(ValidationMiddleware(UpdatePasswordDto))
-  @OpenAPI({ summary: "Change user name" })
-  async changePassword(@CurrentUser() user: User, @Body() body: UpdatePasswordDto) {
+  async changeUserPassword(@CurrentUser() user: User, @Body() body: UpdatePasswordDto) {
     return await this.userService.changePassword(user.id, body);
   }
 
   @Authorized()
   @Post("/:id")
-  @OpenAPI({ summary: "Upload profile picture" })
-  async changePhotoUrl(
+  async changeUserPhotoUrl(
     @UploadedFile("profile", { options: configureMulterOption({ path: avatarFolder }) }) File: Express.Multer.File,
     @CurrentUser() user: User,
   ) {
@@ -61,7 +55,6 @@ export class UserController {
   }
 
   @Get("/avatar/:avatar")
-  @OpenAPI({ summary: "Upload profile picture" })
   async getAvatar(@Param("avatar") avatarName: string, @Res() res: Response) {
     const file = join(avatarFolder, avatarName);
 
@@ -72,7 +65,6 @@ export class UserController {
 
   @Authorized()
   @Delete("/:id")
-  @OpenAPI({ summary: "Delete a user" })
   async deleteUser(@CurrentUser() user: User) {
     return await this.userService.deleteUser(user.id);
   }

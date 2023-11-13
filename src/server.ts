@@ -6,10 +6,14 @@ import { AuthController } from "@controllers/auth.controller";
 import { BookingController } from "@controllers/booking.controller";
 import { CredentialController } from "@controllers/credential.controller";
 import { FlyhubController } from "@controllers/flyhub.controller";
+import { Payment_gatewayController } from "@controllers/payment.controller";
+import { PreBookingController } from "@controllers/pre-booking.controller";
 import { SeedController } from "@controllers/seed.controller";
 import { UserController } from "@controllers/users.controller";
+
 import { Payment_gatewayController } from "@controllers/payment.controller";
 import { ProfitController } from "@controllers/profit.controller";
+
 
 configureEnv();
 
@@ -24,6 +28,9 @@ const app = new App([
   Payment_gatewayController,
   BookingController,
   ProfitController,
+
+  PreBookingController,
+
 ]);
 
 app.listen();
