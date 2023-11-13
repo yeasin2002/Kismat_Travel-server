@@ -10,6 +10,7 @@ import { join } from "path";
 import { Authorized, Body, Controller, CurrentUser, Delete, Get, Param, Patch, Post, Put, Res, UploadedFile, UseBefore } from "routing-controllers";
 import { OpenAPI } from "routing-controllers-openapi";
 import { Service } from "typedi";
+import { isAdmin } from "@middlewares/isAdmin.middleware";
 
 const avatarFolder = join(__dirname, "../__images/user/avatar");
 
@@ -18,8 +19,8 @@ const avatarFolder = join(__dirname, "../__images/user/avatar");
 export class UserController {
   constructor(public userService: UserService) {}
 
-  @Authorized()
-  @Get()
+  @Post()
+  @UseBefore(isAdmin)
   @OpenAPI({ summary: "Return a list of users" })
   async getUsers() {
     return await this.userService.findAllUser();
