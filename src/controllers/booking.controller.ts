@@ -1,7 +1,8 @@
 import { BookingCreateDto } from "@dtos/booking.dto";
+import { User } from "@interfaces/users.interface";
 import { ValidationMiddleware } from "@middlewares/validation.middleware";
 import { BookingService } from "@services/booking.service";
-import { Body, Controller, Delete, Get, Post, UseBefore } from "routing-controllers";
+import { Authorized, Body, Controller, CurrentUser, Delete, Get, Post, UseBefore } from "routing-controllers";
 import { Service } from "typedi";
 
 @Controller("/booking")
@@ -9,24 +10,28 @@ import { Service } from "typedi";
 export class BookingController {
   constructor(public bookingService: BookingService) {}
 
+  @Authorized()
   @Post()
   @UseBefore(ValidationMiddleware(BookingCreateDto))
-  async createBooking(@Body() data: BookingCreateDto) {
-    return this.bookingService.createBooking(data.userId, data.bookingId);
+  async createBooking(@Body() data: BookingCreateDto, @CurrentUser() _user: User) {
+    return this.bookingService.createBooking(_user.id, data.bookingId, data.response, data.passengers);
   }
 
+  @Authorized()
   @Get()
   async getBookings() {
-    //
+    return this.bookingService.getBookings();
   }
 
+  @Authorized()
   @Get("/:id")
-  async getBookingsByUserId() {
-    //
+  async getBookingsByUserId(@CurrentUser() _user: User) {
+    return this.bookingService.getBookingsByUserId(_user.id);
   }
 
+  @Authorized()
   @Delete("/:id")
-  async deleteBookingById() {
-    //
+  async deleteBookingById(@CurrentUser() _user: User) {
+    return this.bookingService.deleteBookingById(_user.id);
   }
 }

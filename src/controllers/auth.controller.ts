@@ -1,5 +1,5 @@
 import { ENV, createClientUrl } from "@config";
-import { CreateUserDto, SingInUserDto, UpdatePasswordDto } from "@dtos/users.dto";
+import { CreateUserDto, SingInUserDto } from "@dtos/users.dto";
 import { HttpException } from "@exceptions/http.exception";
 import { RequestWithUser } from "@interfaces/auth.interface";
 import { User } from "@interfaces/users.interface";
@@ -9,7 +9,7 @@ import { sign } from "@utils/jwt";
 import { body } from "@utils/swagger";
 import { Response } from "express";
 import passport from "passport";
-import { Authorized, Body, Controller, CurrentUser, Get, HttpCode, Post, Put, Req, UseBefore } from "routing-controllers";
+import { Authorized, Body, Controller, CurrentUser, Get, HttpCode, Post, Req, UseBefore } from "routing-controllers";
 import { OpenAPI } from "routing-controllers-openapi";
 import { Service } from "typedi";
 
@@ -62,28 +62,5 @@ export class AuthController {
       res.redirect(url.toString());
     },
   )
-  async googleLoginCallback() {
-    //
-  }
-
-  @Authorized()
-  @Post("/signout")
-  async logOut(@Req() req: Express.Request) {
-    return await new Promise<any>((resolve, reject) => {
-      req.logOut(err => {
-        if (err) {
-          reject({ message: "Authentication failed" });
-        } else {
-          resolve({ success: true });
-        }
-      });
-    });
-  }
-
-  @Authorized()
-  @Put("/change-password")
-  @UseBefore(ValidationMiddleware(UpdatePasswordDto))
-  async updatePassword(@CurrentUser() user: User, @Body() credentials: UpdatePasswordDto) {
-    return this.authService.passwordChange(user, credentials);
-  }
+  async googleLoginCallback() {}
 }

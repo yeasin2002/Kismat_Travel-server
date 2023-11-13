@@ -3,12 +3,12 @@ import { HttpException } from "@exceptions/http.exception";
 import { Service } from "typedi";
 
 @Service()
-export class BookingService {
-  public async createBooking(userId: string, bookingId: string, response: string, passengers: string) {
-    const newBooking = await db.Bookings.create({ bookingId, userId, response, passengers });
+export class PreBookingService {
+  public async createPreBooking(userId: string, searchId: string, response: string, passengers: string) {
+    const newPreBooking = await db.PreBookings.create({ searchId, userId, response, passengers });
 
     const merge = await db.Bookings.findOne({
-      where: { id: newBooking.id },
+      where: { id: newPreBooking.id },
       attributes: { exclude: ["UserId", "userId"] },
       include: {
         all: true,
@@ -19,8 +19,8 @@ export class BookingService {
     return merge.toJSON();
   }
 
-  public async getBookings() {
-    const bookings = await db.Bookings.findAll({
+  public async getPreBookings() {
+    const bookings = await db.PreBookings.findAll({
       attributes: { exclude: ["UserId", "userId"] },
       include: {
         all: true,
@@ -31,8 +31,8 @@ export class BookingService {
     return bookings.map(_v => _v.toJSON());
   }
 
-  public async getBookingsByUserId(userId: string) {
-    const userBookings = await db.Bookings.findAll({
+  public async getPreBookingsByUserId(userId: string) {
+    const userPreBookings = await db.PreBookings.findAll({
       where: { userId },
       attributes: { exclude: ["UserId", "userId"] },
       include: {
@@ -41,11 +41,11 @@ export class BookingService {
       },
     });
 
-    return userBookings.map(_v => _v.toJSON());
+    return userPreBookings.map(_v => _v.toJSON());
   }
 
-  public async deleteBookingById(preBookingId: string) {
-    const booking = await db.Bookings.findOne({
+  public async deletePreBookingById(preBookingId: string) {
+    const preBooking = await db.PreBookings.findOne({
       where: { id: preBookingId },
       include: {
         all: true,
@@ -53,10 +53,10 @@ export class BookingService {
       },
     });
 
-    if (!booking) throw new HttpException(404, "Booking not found");
+    if (!preBooking) throw new HttpException(404, "PreBooking not found");
 
-    await booking.destroy();
+    await preBooking.destroy();
 
-    return booking.toJSON();
+    return preBooking.toJSON();
   }
 }
