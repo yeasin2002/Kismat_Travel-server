@@ -14,13 +14,12 @@ export class payment_gateway_service {
   public async changeStatus(Body: any) {
     try {
       const { status, id } = Body;
-      console.log("🚀 ~ file: payment_gateway.service.ts:17 ~ payment_gateway_service ~ changeStatus ~ Body:", Body);
 
       if (!["LIVE", "SANDBOX", "OFF"].includes(status)) {
         throw new HttpException(400, "not valid input ");
       }
 
-      let dbres = await db.Payment_gateway.update(
+      const DBres = await db.Payment_gateway.update(
         {
           status: status,
         },
@@ -30,7 +29,36 @@ export class payment_gateway_service {
           },
         },
       );
-      return dbres;
+      return DBres;
+    } catch (error) {
+      throw error;
+    }
+  }
+  public async changeInformation(Body: any) {
+    try {
+      const { store_id, merchant_id, signature_key, id } = Body;
+
+      if (!store_id && !merchant_id && !signature_key) {
+        return true;
+      }
+
+      const updated: any = {};
+
+      if (store_id) {
+        updated.store_id = store_id;
+      }
+      if (merchant_id) {
+        updated.merchant_id = merchant_id;
+      }
+      if (signature_key) {
+        updated.signature_key = signature_key;
+      }
+      const DbRes = await db.Payment_gateway.update(updated, {
+        where: {
+          id: id,
+        },
+      });
+      return DbRes;
     } catch (error) {
       throw error;
     }
