@@ -42,17 +42,17 @@ export class ProfitController {
   //   }
   // }
 
-  // @Post("/change_information")
-  // @UseBefore(isAdmin)
-  // public async changeInformation(@Body() BodyData: any, @Req() request: CustomRequest) {
-  //   try {
-  //     if (request.AdminPassCheck) {
-  //       return await this.payment_gateway_service.changeInformation(BodyData);
-  //     } else {
-  //       throw new HttpException(400, "Invalid request");
-  //     }
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
+  @Post("/change_information")
+  @UseBefore(isAdmin)
+  public async changeInformation(@Body() BodyData: any, @Req() request: CustomRequest) {
+    try {
+      if (request.AdminPassCheck) {
+        return await this.profit_service.changeInformation(BodyData);
+      } else {
+        throw new HttpException(400, "Invalid request");
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
 }

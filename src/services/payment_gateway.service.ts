@@ -39,7 +39,7 @@ export class payment_gateway_service {
       const { store_id, merchant_id, signature_key, id } = Body;
 
       if (!store_id && !merchant_id && !signature_key) {
-        return true;
+        return { msg: "Not update" };
       }
 
       const updated: any = {};
