@@ -9,6 +9,7 @@ import { existsSync } from "fs";
 import { join } from "path";
 import { Authorized, Body, Controller, CurrentUser, Delete, Get, Param, Patch, Post, Put, Res, UploadedFile, UseBefore } from "routing-controllers";
 import { Service } from "typedi";
+import { promisify } from "util";
 
 const avatarFolder = join(__dirname, "../__images/user/avatar");
 
@@ -56,9 +57,8 @@ export class UserController {
   @Get("/avatar/:avatar")
   async getAvatar(@Param("avatar") avatarName: string, @Res() res: Response) {
     const file = join(avatarFolder, avatarName);
-
     if (!existsSync(file)) throw new HttpException(404, "Avatar not found");
-    res.sendFile(file);
+    await promisify(res.sendFile.bind(res))(file);
     return res;
   }
 
