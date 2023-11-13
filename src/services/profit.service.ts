@@ -3,14 +3,16 @@ import { Service } from "typedi";
 import { HttpException } from "@exceptions/http.exception";
 
 @Service()
-export class payment_gateway_service {
+export class profit_service {
   public async getInformation() {
     try {
-      return await db.Payment_gateway.findOne();
+      const dbRes = await db.Profit.findOne();
+      return dbRes.toJSON();
     } catch (error) {
       throw error;
     }
   }
+
   public async changeStatus(Body: any) {
     try {
       const { status, id } = Body;
@@ -36,28 +38,30 @@ export class payment_gateway_service {
   }
   public async changeInformation(Body: any) {
     try {
-      const { store_id, merchant_id, signature_key, id } = Body;
-
-      if (!store_id && !merchant_id && !signature_key) {
-        return { msg: "Not update" };
-      }
+      const { id, value_profit, update } = Body;
 
       const updated: any = {};
+      if (!value_profit) {
+        return { msg: "not able to update" };
+      }
 
-      if (store_id) {
-        updated.store_id = store_id;
+      if (!["User", "Agent"].includes(update)) {
+        throw new HttpException(400, "not valid input ");
       }
-      if (merchant_id) {
-        updated.merchant_id = merchant_id;
+      if (update === "User") {
+        updated.user_profit = value_profit;
       }
-      if (signature_key) {
-        updated.signature_key = signature_key;
+
+      if (update === "Agent") {
+        updated.agent_profit = value_profit;
       }
-      const DbRes = await db.Payment_gateway.update(updated, {
+
+      const DbRes = await db.Profit.update(updated, {
         where: {
           id: id,
         },
       });
+
       return DbRes;
     } catch (error) {
       throw error;

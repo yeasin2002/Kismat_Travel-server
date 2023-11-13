@@ -7,6 +7,7 @@ export class SeedService {
   public async seedAirports() {
     await db.Airports.bulkCreate(airports, { validate: true });
   }
+
   public async seedPayments_gateway() {
     const data_gateway = await db.Payment_gateway.findAll();
     if (data_gateway.length > 0) {
@@ -19,6 +20,18 @@ export class SeedService {
       store_id: "aamarpaytest",
       merchant_id: "aamarpaytest",
       signature_key: "dbb74894e82415a2f7ff0ec3a97e4183",
+    });
+  }
+  public async profit_init() {
+    const profitDb = await db.Profit.findAll();
+    if (profitDb.length > 0) {
+      return new Promise((resolve, reject) => {
+        reject(" profit ready data seeded");
+      });
+    }
+    await db.Profit.create({
+      agent_profit: "20",
+      user_profit: "10",
     });
   }
 }

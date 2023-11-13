@@ -4,7 +4,11 @@ import { AirportModel } from "@models/airports.model";
 import { BookingModel } from "@models/booking.model";
 import { CredentialModel } from "@models/credential.model";
 import { Payment_gatewayModel } from "@models/payment_gateway.model";
+
+import { Profit_model } from "@models/profit.model";
+
 import { PreBookingModel } from "@models/prebooking.model";
+
 import { UserModel } from "@models/users.model";
 import { logger } from "@utils/logger";
 import { Sequelize } from "sequelize";
@@ -48,6 +52,9 @@ const Admin = AdminModel(sequelize);
 const Payment_gateway = Payment_gatewayModel(sequelize);
 const Credentials = CredentialModel(sequelize);
 const Bookings = BookingModel(sequelize);
+
+const Profit = Profit_model(sequelize);
+
 const PreBookings = PreBookingModel(sequelize);
 
 Users.hasMany(Bookings, { as: "booking", onDelete: "cascade" });
@@ -61,6 +68,7 @@ export const db = {
   Airports,
   Admin,
   Payment_gateway,
+  Profit,
   Credentials,
   Bookings,
   PreBookings,

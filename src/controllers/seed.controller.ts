@@ -1,7 +1,6 @@
 import { SeedService } from "@services/seed.service";
 import { Controller, Post, Get } from "routing-controllers";
 import { Service } from "typedi";
-import { HttpException } from "@exceptions/http.exception";
 
 @Controller("/seed")
 @Service()
@@ -18,6 +17,7 @@ export class SeedController {
   public async seedPaymentsGateway() {
     try {
       await this.seedService.seedPayments_gateway();
+      await this.seedService.profit_init();
       return { success: true };
     } catch (error) {
       return error;
