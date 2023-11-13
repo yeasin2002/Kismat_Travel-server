@@ -1,8 +1,7 @@
 import { db } from "@db";
-import { CreateUserDto, UpdatePasswordDto } from "@dtos/users.dto";
+import { CreateUserDto } from "@dtos/users.dto";
 import { HttpException } from "@exceptions/http.exception";
 import { User } from "@interfaces/users.interface";
-import { compare } from "@utils/encryption";
 import { sign } from "@utils/jwt";
 import { Service } from "typedi";
 
@@ -18,22 +17,5 @@ export class AuthService {
   public async login(user: User) {
     user && user.password && delete user.password;
     return { user, auth: sign({ id: user.id }) };
-  }
-
-  public async logout() {
-    return { success: true };
-  }
-
-  public async passwordChange(user: User, credentials: UpdatePasswordDto) {
-    const dbUser = await db.Users.unscoped().findByPk(user.id);
-
-    if (!compare(credentials["current-password"], dbUser.password)) {
-      return new HttpException(401, "Authentication failed");
-    }
-
-    dbUser.password = credentials.password;
-    await dbUser.save();
-
-    return { success: true };
   }
 }
