@@ -12,7 +12,7 @@ interface FileUploadOptions {
 
 export const configureMulterOption = ({
   path,
-  regex = /^image\/(jpeg|png)$/,
+  regex = /^image\/(jpeg|png|jpg)$/,
   error = "Only JPEG and PNG files are allowed",
   sizeKB = 1024 * 2,
 }: FileUploadOptions): Options => ({

@@ -47,7 +47,7 @@ export class UserController {
   @Authorized()
   @Post("/:id")
   async changeUserPhotoUrl(
-    @UploadedFile("profile", { options: configureMulterOption({ path: avatarFolder }) }) File: Express.Multer.File,
+    @UploadedFile("avatar", { options: configureMulterOption({ path: avatarFolder }) }) File: Express.Multer.File,
     @CurrentUser() user: User,
   ) {
     return await this.userService.changePhotoUrl(user.id, File.filename);

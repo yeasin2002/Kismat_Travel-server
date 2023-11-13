@@ -92,7 +92,6 @@ export class App {
       routePrefix: "/api/v1",
 
       authorizationChecker: async ({ request }: Modify<Action, { request: Request }>) => {
-        console.log(request.params);
         const auth = request.headers.authorization;
         if (!auth || (auth && !auth.startsWith("Bearer "))) throw new HttpException(401, "Authentication required");
 
