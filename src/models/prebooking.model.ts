@@ -1,6 +1,6 @@
 import { BelongsToMixin } from "@interfaces/sequelize";
 import { UserModel } from "@models/users.model";
-import { CreationOptional, DataTypes, ForeignKey, InferAttributes, InferCreationAttributes, Model, Sequelize } from "sequelize";
+import { CreationOptional, DataTypes, ForeignKey, InferAttributes, InferCreationAttributes, Model, Sequelize, literal } from "sequelize";
 
 export interface PreBookingModel extends BelongsToMixin<UserModel, string, "user"> {}
 export interface PreBookingModel extends Model<InferAttributes<PreBookingModel>, InferCreationAttributes<PreBookingModel>> {
@@ -12,44 +12,65 @@ export interface PreBookingModel extends Model<InferAttributes<PreBookingModel>,
 }
 
 export function PreBookingModel(sequelize: Sequelize) {
-  return sequelize.define<PreBookingModel>("prebooking", {
-    id: {
-      primaryKey: true,
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
-    },
+  return sequelize.define<PreBookingModel>(
+    "prebooking",
+    {
+      id: {
+        primaryKey: true,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+      },
 
-    searchId: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
+      searchId: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
 
-    passengers: {
-      type: DataTypes.JSON,
-      allowNull: false,
-      validate: {
-        jsonValidator(value: string) {
-          try {
-            JSON.parse(value);
-          } catch (error) {
-            throw new Error("Invalid JSON");
-          }
+      passengers: {
+        type: DataTypes.JSON,
+        allowNull: false,
+
+        get() {
+          return JSON.parse(this.getDataValue("passengers"));
+        },
+
+        validate: {
+          jsonValidator(value: any) {
+            if (typeof value === "string") return JSON.parse(value);
+            if (!(value instanceof Object)) throw new Error("!!!Invalid JSON");
+          },
+        },
+      },
+
+      response: {
+        type: DataTypes.JSON,
+        allowNull: false,
+
+        get() {
+          return JSON.parse(this.getDataValue("response"));
+        },
+
+        validate: {
+          jsonValidator(value: any) {
+            if (typeof value === "string") return JSON.parse(value);
+            if (!(value instanceof Object)) throw new Error("!!!Invalid JSON");
+          },
         },
       },
     },
-
-    response: {
-      type: DataTypes.JSON,
-      allowNull: false,
-      validate: {
-        jsonValidator(value: string) {
-          try {
-            JSON.parse(value);
-          } catch (error) {
-            throw new Error("Invalid JSON");
-          }
+    {
+      defaultScope: {
+        attributes: {
+          exclude: ["UserId", "userId"],
+          include: [
+            [literal("JSON_UNQUOTE(passengers)"), "passengers"],
+            [literal("JSON_UNQUOTE(response)"), "response"],
+          ],
+        },
+        include: {
+          all: true,
         },
       },
     },
-  });
+  );
 }
