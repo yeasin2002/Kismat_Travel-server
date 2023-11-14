@@ -68,7 +68,7 @@ export class App {
     this.app.use(morgan(ENV.LOG_FORMAT, { stream }));
     this.app.use(cors({ origin: ENV.ORIGIN, credentials: ENV.CREDENTIALS }));
     this.app.use(hpp());
-    this.app.use(helmet());
+    this.app.use(helmet({ crossOriginResourcePolicy: false }));
     this.app.use(compression());
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
@@ -92,7 +92,6 @@ export class App {
       routePrefix: "/api/v1",
 
       authorizationChecker: async ({ request }: Modify<Action, { request: Request }>) => {
-        console.log(request.params);
         const auth = request.headers.authorization;
         if (!auth || (auth && !auth.startsWith("Bearer "))) throw new HttpException(401, "Authentication required");
 

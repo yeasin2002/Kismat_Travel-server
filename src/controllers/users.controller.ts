@@ -9,7 +9,9 @@ import { existsSync } from "fs";
 import { join } from "path";
 import { Authorized, Body, Controller, CurrentUser, Delete, Get, Param, Patch, Post, Put, Res, UploadedFile, UseBefore } from "routing-controllers";
 import { Service } from "typedi";
+import { promisify } from "util";
 import { isAdmin } from "@middlewares/isAdmin.middleware";
+
 
 const avatarFolder = join(__dirname, "../__images/user/avatar");
 
@@ -48,7 +50,7 @@ export class UserController {
   @Authorized()
   @Post("/:id")
   async changeUserPhotoUrl(
-    @UploadedFile("profile", { options: configureMulterOption({ path: avatarFolder }) }) File: Express.Multer.File,
+    @UploadedFile("avatar", { options: configureMulterOption({ path: avatarFolder }) }) File: Express.Multer.File,
     @CurrentUser() user: User,
   ) {
     return await this.userService.changePhotoUrl(user.id, File.filename);
@@ -57,9 +59,8 @@ export class UserController {
   @Get("/avatar/:avatar")
   async getAvatar(@Param("avatar") avatarName: string, @Res() res: Response) {
     const file = join(avatarFolder, avatarName);
-
     if (!existsSync(file)) throw new HttpException(404, "Avatar not found");
-    res.sendFile(file);
+    await promisify(res.sendFile.bind(res))(file);
     return res;
   }
 
