@@ -9,11 +9,9 @@ export class BookingCreateDto {
   @IsNotEmpty()
   public bookingId: string;
 
-  @IsString()
   @IsNotEmpty()
   public response: string;
 
-  @IsString()
   @IsNotEmpty()
   public passengers: string;
 }
