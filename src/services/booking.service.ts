@@ -5,7 +5,12 @@ import { Service } from "typedi";
 @Service()
 export class BookingService {
   public async createBooking(userId: string, bookingId: string, response: string, passengers: string) {
-    const newBooking = await db.Bookings.create({ bookingId, userId, response, passengers });
+    const newBooking = await db.Bookings.create({
+      bookingId,
+      userId,
+      response: JSON.stringify(response),
+      passengers: JSON.stringify(passengers),
+    });
 
     const merge = await db.Bookings.findOne({
       where: { id: newBooking.id },
