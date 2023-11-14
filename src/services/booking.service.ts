@@ -14,24 +14,13 @@ export class BookingService {
 
     const merge = await db.Bookings.findOne({
       where: { id: newBooking.id },
-      attributes: { exclude: ["UserId", "userId"] },
-      include: {
-        all: true,
-        nested: true,
-      },
     });
 
     return merge.toJSON();
   }
 
   public async getBookings() {
-    const bookings = await db.Bookings.findAll({
-      attributes: { exclude: ["UserId", "userId"] },
-      include: {
-        all: true,
-        nested: true,
-      },
-    });
+    const bookings = await db.Bookings.findAll({});
 
     return bookings.map(_v => _v.toJSON());
   }
@@ -39,11 +28,6 @@ export class BookingService {
   public async getBookingsByUserId(userId: string) {
     const userBookings = await db.Bookings.findAll({
       where: { userId },
-      attributes: { exclude: ["UserId", "userId"] },
-      include: {
-        all: true,
-        nested: true,
-      },
     });
 
     return userBookings.map(_v => _v.toJSON());
@@ -52,10 +36,6 @@ export class BookingService {
   public async deleteBookingById(preBookingId: string) {
     const booking = await db.Bookings.findOne({
       where: { id: preBookingId },
-      include: {
-        all: true,
-        nested: true,
-      },
     });
 
     if (!booking) throw new HttpException(404, "Booking not found");

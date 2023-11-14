@@ -12,38 +12,22 @@ export class PreBookingService {
       passengers: JSON.stringify(passengers),
     });
 
-    const merge = await db.Bookings.findOne({
+    const merge = await db.PreBookings.findOne({
       where: { id: newPreBooking.id },
-      attributes: { exclude: ["UserId", "userId"] },
-      include: {
-        all: true,
-        nested: true,
-      },
     });
 
     return merge.toJSON();
   }
 
   public async getPreBookings() {
-    const bookings = await db.PreBookings.findAll({
-      attributes: { exclude: ["UserId", "userId"] },
-      include: {
-        all: true,
-        nested: true,
-      },
-    });
+    const preBookings = await db.PreBookings.findAll();
 
-    return bookings.map(_v => _v.toJSON());
+    return preBookings.map(_v => _v.toJSON());
   }
 
   public async getPreBookingsByUserId(userId: string) {
     const userPreBookings = await db.PreBookings.findAll({
       where: { userId },
-      attributes: { exclude: ["UserId", "userId"] },
-      include: {
-        all: true,
-        nested: true,
-      },
     });
 
     return userPreBookings.map(_v => _v.toJSON());
@@ -52,10 +36,6 @@ export class PreBookingService {
   public async deletePreBookingById(preBookingId: string) {
     const preBooking = await db.PreBookings.findOne({
       where: { id: preBookingId },
-      include: {
-        all: true,
-        nested: true,
-      },
     });
 
     if (!preBooking) throw new HttpException(404, "PreBooking not found");
