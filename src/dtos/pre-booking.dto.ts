@@ -9,11 +9,9 @@ export class PreBookingCreateDto {
   @IsNotEmpty()
   public searchId: string;
 
-  @IsString()
   @IsNotEmpty()
   public response: string;
 
-  @IsString()
   @IsNotEmpty()
   public passengers: string;
 }
