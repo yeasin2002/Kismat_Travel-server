@@ -1,9 +1,9 @@
+import { HttpException } from "@exceptions/http.exception";
+import { isAdmin } from "@middlewares/isAdmin.middleware";
 import { profit_service } from "@services/profit.service";
 import { ParseBites } from "@utils/encryption";
-import { Controller, Post, Body, UseBefore, Req } from "routing-controllers";
+import { Body, Controller, Get, Post, Req, UseBefore } from "routing-controllers";
 import { Service } from "typedi";
-import { isAdmin } from "@middlewares/isAdmin.middleware";
-import { HttpException } from "@exceptions/http.exception";
 
 import { Request } from "express";
 interface CustomRequest extends Request {
@@ -14,7 +14,8 @@ interface CustomRequest extends Request {
 @Service()
 export class ProfitController {
   constructor(public profit_service: profit_service) {}
-  @Post("/get_information")
+
+  @Get("/get_information")
   public async getInformation() {
     try {
       const information: any = await this.profit_service.getInformation();
