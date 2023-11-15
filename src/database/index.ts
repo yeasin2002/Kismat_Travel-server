@@ -58,10 +58,10 @@ const Profit = Profit_model(sequelize);
 const PreBookings = PreBookingModel(sequelize);
 
 Users.hasMany(Bookings, { as: "booking", onDelete: "cascade" });
-Bookings.belongsTo(Users, { foreignKey: "userId", as: "user" });
+Bookings.belongsTo(Users, { foreignKey: "userId", as: "user", onDelete: "cascade" });
 
 Users.hasMany(PreBookings, { as: "preBooking", onDelete: "cascade" });
-PreBookings.belongsTo(Users, { foreignKey: "userId", as: "user" });
+PreBookings.belongsTo(Users, { foreignKey: "userId", as: "user", onDelete: "cascade" });
 
 export const db = {
   Users,
