@@ -1,5 +1,6 @@
 import { db } from "@db";
-import { Op } from "sequelize";
+import { getStartDateAndEndDate } from "@utils/getStartDateAndEndDate";
+import { Op, col, fn, literal } from "sequelize";
 import { Service } from "typedi";
 
 @Service()
@@ -79,6 +80,23 @@ export class StaticsService {
           [Op.gte]: date,
         },
       },
+    });
+  }
+
+  public async getCurrentWeekBookingsByDays() {
+    const { start, end } = getStartDateAndEndDate();
+
+    return await db.Users.findAll({
+      attributes: [
+        [fn("COUNT", literal("*")), "count"],
+        [fn("DAY", col("createdAt")), "day"],
+      ],
+      where: {
+        createdAt: {
+          [Op.between]: [start, end],
+        },
+      },
+      group: [fn("DAY", col("createdAt"))],
     });
   }
 }
