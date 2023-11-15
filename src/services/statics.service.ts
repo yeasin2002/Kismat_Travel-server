@@ -42,4 +42,17 @@ export class StaticsService {
       },
     });
   }
+
+  public async getTodaysUserSignupCount() {
+    const date = new Date();
+    date.setHours(0, 0, 0, 0);
+
+    return await db.Users.count({
+      where: {
+        createdAt: {
+          [Op.gte]: date,
+        },
+      },
+    });
+  }
 }
