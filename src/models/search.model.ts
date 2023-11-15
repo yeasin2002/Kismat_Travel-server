@@ -3,6 +3,7 @@ import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, 
 export interface SearchModel extends Model<InferAttributes<SearchModel>, InferCreationAttributes<SearchModel>> {
   id: CreationOptional<string>;
   search: string;
+  createdAt?: Date;
 }
 
 export function SearchModel(sequelize: Sequelize) {

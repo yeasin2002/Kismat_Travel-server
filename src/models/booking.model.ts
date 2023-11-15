@@ -9,6 +9,9 @@ export interface BookingModel extends Model<InferAttributes<BookingModel>, Infer
   passengers: string;
   response: string;
   userId?: ForeignKey<string>;
+
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export function BookingModel(sequelize: Sequelize) {

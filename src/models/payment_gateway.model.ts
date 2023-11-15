@@ -7,6 +7,9 @@ export interface Payment_gatewayModel extends Model<InferAttributes<Payment_gate
   merchant_id: string;
   signature_key: string;
   status: string;
+
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export function Payment_gatewayModel(sequelize: Sequelize) {

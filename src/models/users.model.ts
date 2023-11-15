@@ -12,6 +12,9 @@ export interface UserModel extends Model<InferAttributes<UserModel>, InferCreati
   password: string;
   name: string;
   photoUrl: CreationOptional<string>;
+
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export function UserModel(sequelize: Sequelize) {
