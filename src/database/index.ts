@@ -52,9 +52,7 @@ const Admin = AdminModel(sequelize);
 const Payment_gateway = Payment_gatewayModel(sequelize);
 const Credentials = CredentialModel(sequelize);
 const Bookings = BookingModel(sequelize);
-
 const Profit = Profit_model(sequelize);
-
 const PreBookings = PreBookingModel(sequelize);
 
 Users.hasMany(Bookings, { as: "booking", onDelete: "cascade" });
