@@ -57,9 +57,6 @@ export class App {
   }
 
   private async connectToDatabase() {
-    await db.PreBookings.sync({ force: true });
-    await db.Bookings.sync({ force: true });
-    await db.Users.sync({ force: true });
     await db.sequelize.sync();
   }
 
