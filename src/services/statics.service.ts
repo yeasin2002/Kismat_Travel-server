@@ -55,4 +55,30 @@ export class StaticsService {
       },
     });
   }
+
+  public async getTodaysBookingsCount() {
+    const date = new Date();
+    date.setHours(0, 0, 0, 0);
+
+    return await db.Bookings.count({
+      where: {
+        createdAt: {
+          [Op.gte]: date,
+        },
+      },
+    });
+  }
+
+  public async getTodaysPreBookingsCount() {
+    const date = new Date();
+    date.setHours(0, 0, 0, 0);
+
+    return await db.PreBookings.count({
+      where: {
+        createdAt: {
+          [Op.gte]: date,
+        },
+      },
+    });
+  }
 }
