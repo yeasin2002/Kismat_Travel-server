@@ -10,10 +10,8 @@ import { Payment_gatewayController } from "@controllers/payment.controller";
 import { PreBookingController } from "@controllers/pre-booking.controller";
 import { SeedController } from "@controllers/seed.controller";
 import { UserController } from "@controllers/users.controller";
-
-import { Payment_gatewayController } from "@controllers/payment.controller";
+import { Payment_Handler } from "@controllers/payment_handler.controller";
 import { ProfitController } from "@controllers/profit.controller";
-
 
 configureEnv();
 
@@ -28,9 +26,8 @@ const app = new App([
   Payment_gatewayController,
   BookingController,
   ProfitController,
-
+  Payment_Handler,
   PreBookingController,
-
 ]);
 
 app.listen();

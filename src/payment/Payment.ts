@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import axios from "axios";
 import { db } from "@db";
-
+import { ENV } from "@config";
+import { HttpException } from "@exceptions/http.exception";
 import { ParseBites } from "@utils/encryption";
 
 // validate function
@@ -39,20 +40,22 @@ function isValidEmail(email) {
 async function getData() {
   try {
     const data = await db.Payment_gateway.findOne();
+    let sender;
     if (data) {
-      data.store_id = ParseBites(data.store_id);
-      data.merchant_id = ParseBites(data.merchant_id);
-      data.signature_key = ParseBites(data.signature_key);
-      return data;
+      sender = data.toJSON();
+      sender.store_id = ParseBites(sender.store_id);
+      sender.merchant_id = ParseBites(sender.merchant_id);
+      sender.signature_key = ParseBites(sender.signature_key);
+      return sender;
     }
     throw "Could not find";
   } catch (error) {
     return error;
   }
 }
-function generateUniqueString() {
-  return `${new Date().getTime()}_${Math.random().toString(36).substring(2, 32)}`;
-}
+
+type success_url = "bookings" | "payment";
+
 // Define the type for the request data
 export interface AamarpayRequestData {
   amount: string;
@@ -62,18 +65,20 @@ export interface AamarpayRequestData {
   cus_email: string;
   cus_phone: string;
   tran_id: string;
+  success_url: success_url;
   cus_city?: string;
   cus_state?: string;
   cus_country?: string;
   cus_postcode?: string;
   cus_add1?: string;
   cus_add2?: string;
-  custom_data?: object;
+  opt_a?: string;
+  opt_b?: string;
+  opt_c?: string;
+  opt_d?: string;
 }
 export interface AamarpayPayload extends AamarpayRequestData {
   store_id: string;
-
-  success_url: string;
   fail_url: string;
   cancel_url: string;
   signature_key: string;
@@ -81,27 +86,32 @@ export interface AamarpayPayload extends AamarpayRequestData {
 }
 
 const Payment = async (requestData: AamarpayRequestData) => {
-  const Payment_data = await getData();
-
-  let apiUrl = "https://sandbox.aamarpay.com/jsonpost.php";
-
-  if (Payment_data.status === "LIVE") {
-    apiUrl = "https://secure.aamarpay.com";
-  }
-
   try {
+    const Payment_data = await getData();
+    let apiUrl = "https://sandbox.aamarpay.com/jsonpost.php";
+    if (Payment_data.status === "LIVE") {
+      apiUrl = "https://secure.aamarpay.com";
+    }
+
     const requestData_pay: AamarpayPayload = {
       ...verifyAamarpayData(requestData),
       store_id: Payment_data.store_id,
       signature_key: Payment_data.signature_key,
-      success_url: "http://www.merchantdomain.com/sucesspage.html",
-      fail_url: "http://www.merchantdomain.com/failedpage.html",
-      cancel_url: "http://www.merchantdomain.com/cancellpage.html",
+      fail_url: `${ENV.BASE_URL}/api/v1/payment_handler/${ENV.PAYMENT_FAIL_URL}`,
+      cancel_url: `${ENV.BASE_URL}/api/v1/payment_handler/${ENV.PAYMENT_CANCEL_URL}`,
       type: "json",
     };
 
+    if (requestData_pay.success_url === "bookings" || requestData_pay.success_url === "payment") {
+      requestData_pay.success_url = `${ENV.BASE_URL}/api/v1/payment_handler/${requestData_pay.success_url}` as success_url;
+    }
+
     const response = await axios.post(apiUrl, requestData_pay);
-    return response;
+    if (response.data?.result) {
+      return response.data?.payment_url;
+    } else {
+      throw new HttpException(400, JSON.stringify(response.data));
+    }
   } catch (error) {
     throw error;
   }
