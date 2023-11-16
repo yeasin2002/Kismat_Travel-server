@@ -161,4 +161,27 @@ export class StaticsService {
         month: createCurrentYearMonthDate(index + 1).toLocaleDateString("en", { month: "long" }),
       }));
   }
+
+  public async getCurrentYearNewBookingByMonths() {
+    const monthsCount = (
+      await db.Bookings.unscoped().findAll({
+        attributes: [
+          [fn("COUNT", literal("*")), "count"],
+          [fn("DATE", col("created_at")), "month"],
+          [fn("MONTH", col("created_at")), "num"],
+        ],
+        where: where(fn("YEAR", col("created_at")), fn("YEAR", fn("CURRENT_DATE"))),
+        group: [fn("MONTH", col("created_at")), fn("YEAR", col("created_at"))],
+      })
+    ).map(item => ({ month: item.get("month"), count: item.get("count"), num: item.get("num") }));
+
+    const countsByMonths = Object.fromEntries(monthsCount.map(entry => [entry.num, entry.count]));
+
+    return Array(12)
+      .fill(null)
+      .map((_, index) => ({
+        count: countsByMonths[index + 1] || 0,
+        month: createCurrentYearMonthDate(index + 1).toLocaleDateString("en", { month: "long" }),
+      }));
+  }
 }
