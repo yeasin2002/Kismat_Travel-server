@@ -1,14 +1,14 @@
 import { payment_gateway_service } from "@services/payment_gateway.service";
 import { Controller, Post, Body, Get } from "routing-controllers";
 import { Service } from "typedi";
-import Payment from "@/payment/Payment";
+import Payment, { PaymentResponse } from "@/payment/Payment";
 
 @Controller("/payment_handler")
 @Service()
 export class Payment_Handler {
   constructor(public payment_gateway_service: payment_gateway_service) {}
   @Post("/bookings")
-  public async success(@Body() body: any) {
+  public async success(@Body() body: PaymentResponse) {
     console.log(body);
     return body;
   }
