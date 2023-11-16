@@ -1,9 +1,8 @@
-export function getStartDateAndEndDate(day = 7) {
-  const start = new Date();
+export function getStartDateAndEndDate(day = 6) {
+  const currentDay = new Date();
 
-  const end = new Date(start.getTime());
-  end.setDate(end.getDate() - day);
-  end.setHours(0, 0, 0, 0);
+  const sevenDaysEgo = new Date();
+  sevenDaysEgo.setDate(sevenDaysEgo.getDate() - day);
 
-  return { start, end };
+  return { currentDay, sevenDaysEgo };
 }

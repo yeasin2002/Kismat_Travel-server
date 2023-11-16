@@ -1,4 +1,5 @@
 import { db } from "@db";
+import { getDatesBetween } from "@utils/getDatesBetween";
 import { getStartDateAndEndDate } from "@utils/getStartDateAndEndDate";
 import { Op, col, fn, literal } from "sequelize";
 import { Service } from "typedi";
@@ -84,19 +85,30 @@ export class StaticsService {
   }
 
   public async getCurrentWeekBookingsByDays() {
-    const { start, end } = getStartDateAndEndDate();
+    const { currentDay, sevenDaysEgo } = getStartDateAndEndDate();
 
-    return await db.Users.findAll({
-      attributes: [
-        [fn("COUNT", literal("*")), "count"],
-        [fn("DAY", col("createdAt")), "day"],
-      ],
-      where: {
-        createdAt: {
-          [Op.between]: [start, end],
+    const dailyCount = (
+      await db.Users.findAll({
+        attributes: [
+          [fn("COUNT", literal("*")), "count"],
+          [fn("DATE", col("created_at")), "day"],
+        ],
+        where: {
+          createdAt: {
+            [Op.between]: [sevenDaysEgo, currentDay],
+          },
         },
-      },
-      group: [fn("DAY", col("createdAt"))],
-    });
+        group: [fn("DAY", col("created_at"))],
+      })
+    ).map(item => ({ day: item.get("day"), count: item.get("count") }));
+
+    const countsByDate = Object.fromEntries(dailyCount.map(entry => [entry.day, entry.count]));
+
+    const dateRange = getDatesBetween(sevenDaysEgo, currentDay);
+
+    return dateRange.map(date => ({
+      count: countsByDate[date] || 0,
+      day: new Date(date).toLocaleDateString("en", { weekday: "long" }),
+    }));
   }
 }

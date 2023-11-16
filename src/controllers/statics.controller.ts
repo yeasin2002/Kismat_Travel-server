@@ -1,5 +1,4 @@
 import { SearchDto } from "@dtos/index";
-import { isAdmin } from "@middlewares/isAdmin.middleware";
 import { ValidationMiddleware } from "@middlewares/validation.middleware";
 import { StaticsService } from "@services/statics.service";
 import { Body, Controller, Post, UseBefore } from "routing-controllers";
@@ -17,7 +16,6 @@ export class StaticsController {
   }
 
   @Post("/todays")
-  @UseBefore(isAdmin)
   public async getTodaysStatics() {
     const [todaysSearchesCount, todaysNewUserCount, todaysBookingsCount, todaysPreBookingsCount] = await Promise.all([
       this.staticsService.getTodaysSearchesCount(),
@@ -33,5 +31,10 @@ export class StaticsController {
       todaysPreBookingsCount,
       success: true,
     };
+  }
+
+  @Post("/weeks")
+  public async getWeeksStatics() {
+    return await this.staticsService.getCurrentWeekBookingsByDays();
   }
 }
