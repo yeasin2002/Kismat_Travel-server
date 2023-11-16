@@ -4,20 +4,18 @@ config({ path: `.env.${process.env.NODE_ENV || "development"}.local` });
 
 export function configureEnv() {
   return cleanEnv(process.env, {
+    BASE_URL: str(),
     NODE_ENV: str(),
     PORT: port({ devDefault: 5000 }),
-
     SECRET_KEY: str({ devDefault: "secretKey" }),
-
     ORIGIN: str({ devDefault: "*" }),
     CREDENTIALS: bool({ default: false }),
-
     DATABASE_NAME: str({ devDefault: "fly-hub-development" }),
     DATABASE_USER: str({ devDefault: "root" }),
     DATABASE_PORT: port({ devDefault: 3306 }),
     DATABASE_HOST: str({ devDefault: "localhost" }),
     DATABASE_PASSWORD: str({ devDefault: "" }),
-
+    // google
     GOOGLE_CLIENT_ID: str(),
     GOOGLE_CLIENT_SECRET: str(),
     GOOGLE_CALLBACK_URL: str({ default: "http://localhost:3000" }),
@@ -30,6 +28,9 @@ export function configureEnv() {
     LOG_DIR: str({ default: "logs" }),
 
     FLY_HUB_API_BASE_URL: str({ devDefault: "http://api.sandbox.flyhub.com/api/v1" }),
+    // #PAYMENT GATEWAY
+    PAYMENT_FAIL_URL: str(),
+    PAYMENT_CANCEL_URL: str(),
   });
 }
 

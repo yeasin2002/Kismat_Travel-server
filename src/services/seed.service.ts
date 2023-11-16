@@ -12,7 +12,7 @@ export class SeedService {
     const data_gateway = await db.Payment_gateway.findAll();
     if (data_gateway.length > 0) {
       return new Promise((resolve, reject) => {
-        reject("all ready data seeded");
+        resolve("all ready gateway data seeded");
       });
     }
     await db.Payment_gateway.create({
@@ -21,17 +21,24 @@ export class SeedService {
       merchant_id: "aamarpaytest",
       signature_key: "dbb74894e82415a2f7ff0ec3a97e4183",
     });
+    return new Promise((resolve, reject) => {
+      resolve("all gateway data seeded");
+    });
   }
   public async profit_init() {
     const profitDb = await db.Profit.findAll();
     if (profitDb.length > 0) {
       return new Promise((resolve, reject) => {
-        reject(" profit ready data seeded");
+        resolve("all ready profit data seeded");
       });
     }
     await db.Profit.create({
       agent_profit: "20",
       user_profit: "10",
+    });
+
+    return new Promise((resolve, reject) => {
+      resolve("all profit data seeded");
     });
   }
 }

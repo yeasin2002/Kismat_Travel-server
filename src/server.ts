@@ -12,6 +12,7 @@ import { ProfitController } from "@controllers/profit.controller";
 import { SeedController } from "@controllers/seed.controller";
 import { StaticsController } from "@controllers/statics.controller";
 import { UserController } from "@controllers/users.controller";
+import { Payment_Handler } from "@controllers/payment_handler.controller";
 
 configureEnv();
 
@@ -28,6 +29,7 @@ const app = new App([
   ProfitController,
   PreBookingController,
   StaticsController,
+  Payment_Handler
 ]);
 
 app.listen();
