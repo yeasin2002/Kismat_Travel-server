@@ -5,6 +5,9 @@ export interface Profit_model extends Model<InferAttributes<Profit_model>, Infer
   id: CreationOptional<string>;
   user_profit: string;
   agent_profit: string;
+
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 // profit model

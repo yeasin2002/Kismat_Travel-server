@@ -9,6 +9,9 @@ export interface PreBookingModel extends Model<InferAttributes<PreBookingModel>,
   passengers: string;
   response: string;
   userId?: ForeignKey<string>;
+
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export function PreBookingModel(sequelize: Sequelize) {
@@ -36,8 +39,11 @@ export function PreBookingModel(sequelize: Sequelize) {
 
         validate: {
           jsonValidator(value: any) {
-            if (typeof value === "string") return JSON.parse(value);
-            if (!(value instanceof Object)) throw new Error("!!!Invalid JSON");
+            try {
+              JSON.parse(value);
+            } catch (error) {
+              throw new Error("Invalid JSON");
+            }
           },
         },
       },
@@ -52,8 +58,11 @@ export function PreBookingModel(sequelize: Sequelize) {
 
         validate: {
           jsonValidator(value: any) {
-            if (typeof value === "string") return JSON.parse(value);
-            if (!(value instanceof Object)) throw new Error("!!!Invalid JSON");
+            try {
+              JSON.parse(value);
+            } catch (error) {
+              throw new Error("Invalid JSON");
+            }
           },
         },
       },

@@ -5,6 +5,9 @@ export interface CredentialModel extends Model<InferAttributes<CredentialModel>,
   key: CreationOptional<string>;
   username: string;
   apikey: string;
+
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export function CredentialModel(sequelize: Sequelize) {

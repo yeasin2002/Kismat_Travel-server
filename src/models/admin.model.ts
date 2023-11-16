@@ -10,6 +10,9 @@ export interface AdminModel extends Model<InferAttributes<AdminModel>, InferCrea
   sessions: string;
   photo: CreationOptional<string>;
   role: "SuperAdmin" | "Employee";
+
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export function AdminModel(sequelize: Sequelize) {
