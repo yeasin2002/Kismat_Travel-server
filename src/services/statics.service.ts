@@ -6,7 +6,8 @@ import { Service } from "typedi";
 @Service()
 export class StaticsService {
   public async createSearch(search: Record<string, any>) {
-    return await db.Searches.create({ search: JSON.stringify(search) });
+    const _search = await db.Searches.create({ search: JSON.stringify(search) });
+    return _search.toJSON();
   }
 
   public async getSearches() {

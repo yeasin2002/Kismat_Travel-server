@@ -8,7 +8,8 @@ import { isObject } from "class-validator";
 import * as fs from "fs";
 import { join } from "path";
 
-const HEADER_STORE = join(__dirname, "../../credentials/auth.json");
+const HEADER_STORE = join(__dirname, "../../credentials");
+const HEADER_FILE = join(HEADER_STORE, "auth.json");
 
 export async function getFlyHubAuth() {
   const dbRes = await db.Credentials.findOne({ where: { key: "@api-key" } });
@@ -33,14 +34,14 @@ function createExpireDate(expirationDays: string) {
 
 export function saveDataWithExpiration(token: string, expirationDays: string) {
   ensureFilePathExists(HEADER_STORE);
-  fs.writeFileSync(HEADER_STORE, JSON.stringify({ token, expire: createExpireDate(expirationDays) }, null, 2));
+  fs.writeFileSync(HEADER_FILE, JSON.stringify({ token, expire: createExpireDate(expirationDays) }, null, 2));
   return token;
 }
 
 export function checkExpirationAndRetrieveToken() {
   try {
     ensureFilePathExists(HEADER_STORE);
-    const data = JSON.parse(fs.readFileSync(HEADER_STORE, "utf8"));
+    const data = JSON.parse(fs.readFileSync(HEADER_FILE, "utf8"));
     const expirationDate = new Date(data.expire);
 
     return { auth: data.token as string, valid: (expirationDate > new Date()) as true } as const;
