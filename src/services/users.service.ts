@@ -58,4 +58,17 @@ export class UserService {
 
     return { success: true };
   }
+
+  public async addNewByAdmin(body: any) {
+    try {
+      const newUser = await db.Users.create({
+        email: body.email,
+        name: body.name,
+        password: body.password,
+      });
+      return newUser;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
