@@ -29,7 +29,7 @@ const app = new App([
   ProfitController,
   PreBookingController,
   StaticsController,
-  Payment_Handler
+  Payment_Handler,
 ]);
 
 app.listen();

@@ -12,7 +12,6 @@ import { Service } from "typedi";
 import { promisify } from "util";
 import { isAdmin } from "@middlewares/isAdmin.middleware";
 
-
 const avatarFolder = join(__dirname, "../__images/user/avatar");
 
 @Controller("/users")
@@ -24,6 +23,15 @@ export class UserController {
   @UseBefore(isAdmin)
   async getUsers() {
     return await this.userService.findAllUser();
+  }
+  @Post("/add_new")
+  @UseBefore(isAdmin)
+  async AddNew(@Body() body: any) {
+    try {
+      return await this.userService.addNewByAdmin(body);
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Authorized()
