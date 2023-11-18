@@ -2,7 +2,7 @@ import { SearchDto } from "@dtos/index";
 import { isAdmin } from "@middlewares/isAdmin.middleware";
 import { ValidationMiddleware } from "@middlewares/validation.middleware";
 import { StaticsService } from "@services/statics.service";
-import { Body, Controller, Post, UseBefore } from "routing-controllers";
+import { Body, Controller, Get, Post, UseBefore } from "routing-controllers";
 import { Service } from "typedi";
 
 @Controller("/statics")
@@ -14,6 +14,11 @@ export class StaticsController {
   @UseBefore(ValidationMiddleware(SearchDto))
   public async addSearchHistory(@Body() body: { search: Record<string, any> }) {
     return await this.staticsService.createSearch(body.search);
+  }
+
+  @Get("/searches")
+  public async getSearches() {
+    return await this.staticsService.getSearches();
   }
 
   @Post("/todays")

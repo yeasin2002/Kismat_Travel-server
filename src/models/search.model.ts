@@ -36,8 +36,8 @@ export function SearchModel(sequelize: Sequelize) {
       },
     },
     {
-      timestamps: false,
-      createdAt: true,
+      timestamps: true,
+      updatedAt: false,
       defaultScope: {
         attributes: {
           include: [[literal("JSON_UNQUOTE(search)"), "search"]],

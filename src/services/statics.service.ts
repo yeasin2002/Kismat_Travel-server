@@ -11,7 +11,11 @@ export class StaticsService {
   }
 
   public async getSearches() {
-    return await db.Searches.findAll({ order: [["createdAt", "DESC"]] });
+    const attributes = db.Searches.getAttributes();
+
+    const searches = await db.Searches.findAll({ order: [[attributes.createdAt.field, "DESC"]] });
+
+    return searches.map(search => search.toJSON());
   }
 
   public async getSearchesCount() {
@@ -22,13 +26,15 @@ export class StaticsService {
     const date = new Date();
     date.setHours(0, 0, 0, 0);
 
+    const attributes = db.Searches.getAttributes();
+
     return await db.Searches.findAll({
       where: {
         createdAt: {
           [Op.gte]: date,
         },
       },
-      order: [["createdAt", "DESC"]],
+      order: [[attributes.createdAt.field, "DESC"]],
     });
   }
 
@@ -87,18 +93,20 @@ export class StaticsService {
   public async getCurrentWeekNewUserByDays() {
     const { currentDay, sevenDaysEgo } = getStartDateAndEndDate();
 
+    const attributes = db.Users.getAttributes();
+
     const dailyCount = (
       await db.Users.findAll({
         attributes: [
           [fn("COUNT", literal("*")), "count"],
-          [fn("DATE", col("created_at")), "day"],
+          [fn("DATE", col(attributes.createdAt.field)), "day"],
         ],
         where: {
           createdAt: {
             [Op.between]: [sevenDaysEgo, currentDay],
           },
         },
-        group: [fn("DAY", col("created_at"))],
+        group: [fn("DAY", col(attributes.createdAt.field))],
       })
     ).map(item => ({ day: item.get("day"), count: item.get("count") }));
 
@@ -115,18 +123,20 @@ export class StaticsService {
   public async getCurrentWeekNewBookingsByDays() {
     const { currentDay, sevenDaysEgo } = getStartDateAndEndDate();
 
+    const attributes = db.Bookings.getAttributes();
+
     const dailyCount = (
       await db.Bookings.unscoped().findAll({
         attributes: [
           [fn("COUNT", literal("*")), "count"],
-          [fn("DATE", col("created_at")), "day"],
+          [fn("DATE", col(attributes.createdAt.field)), "day"],
         ],
         where: {
           createdAt: {
             [Op.between]: [sevenDaysEgo, currentDay],
           },
         },
-        group: [fn("DAY", col("created_at"))],
+        group: [fn("DAY", col(attributes.createdAt.field))],
       })
     ).map(item => ({ day: item.get("day"), count: item.get("count") }));
 
@@ -141,15 +151,17 @@ export class StaticsService {
   }
 
   public async getCurrentYearNewUsersByMonths() {
+    const attributes = db.Users.getAttributes();
+
     const monthsCount = (
       await db.Users.findAll({
         attributes: [
           [fn("COUNT", literal("*")), "count"],
-          [fn("DATE", col("created_at")), "month"],
-          [fn("MONTH", col("created_at")), "num"],
+          [fn("DATE", col(attributes.createdAt.field)), "month"],
+          [fn("MONTH", col(attributes.createdAt.field)), "num"],
         ],
-        where: where(fn("YEAR", col("created_at")), fn("YEAR", fn("CURRENT_DATE"))),
-        group: [fn("MONTH", col("created_at")), fn("YEAR", col("created_at"))],
+        where: where(fn("YEAR", col(attributes.createdAt.field)), fn("YEAR", fn("CURRENT_DATE"))),
+        group: [fn("MONTH", col(attributes.createdAt.field)), fn("YEAR", col(attributes.createdAt.field))],
       })
     ).map(item => ({ month: item.get("month"), count: item.get("count"), num: item.get("num") }));
 
@@ -164,15 +176,17 @@ export class StaticsService {
   }
 
   public async getCurrentYearNewBookingByMonths() {
+    const attributes = db.Bookings.getAttributes();
+
     const monthsCount = (
       await db.Bookings.unscoped().findAll({
         attributes: [
           [fn("COUNT", literal("*")), "count"],
-          [fn("DATE", col("created_at")), "month"],
-          [fn("MONTH", col("created_at")), "num"],
+          [fn("DATE", col(attributes.createdAt.field)), "month"],
+          [fn("MONTH", col(attributes.createdAt.field)), "num"],
         ],
-        where: where(fn("YEAR", col("created_at")), fn("YEAR", fn("CURRENT_DATE"))),
-        group: [fn("MONTH", col("created_at")), fn("YEAR", col("created_at"))],
+        where: where(fn("YEAR", col(attributes.createdAt.field)), fn("YEAR", fn("CURRENT_DATE"))),
+        group: [fn("MONTH", col(attributes.createdAt.field)), fn("YEAR", col(attributes.createdAt.field))],
       })
     ).map(item => ({ month: item.get("month"), count: item.get("count"), num: item.get("num") }));
 
