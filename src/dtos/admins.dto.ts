@@ -25,5 +25,5 @@ export class UpdatePasswordDto extends AdminPasswordDto {
   @IsNotEmpty()
   @MinLength(6)
   @MaxLength(32)
-  public "current-password": string;
+  public "current": string;
 }

@@ -1,15 +1,22 @@
+import { LoginAdminDto, UpdatePasswordDto } from "@dtos/admins.dto";
+import { HttpException } from "@exceptions/http.exception";
+import { isAdmin } from "@middlewares/isAdmin.middleware";
+import { ValidationMiddleware } from "@middlewares/validation.middleware";
 import { AdminService } from "@services/admins.service";
-
+import { configureMulterOption } from "@utils/multer";
 import { Request, Response } from "express";
-import { Body, Controller, Post, Req, Res, UseBefore } from "routing-controllers";
+import { existsSync } from "fs";
+import { join } from "path";
+import { Body, Controller, Get, Param, Post, Req, Res, UploadedFile, UseBefore } from "routing-controllers";
 import { OpenAPI } from "routing-controllers-openapi";
 import { Service } from "typedi";
-
-import { isAdmin } from "@middlewares/isAdmin.middleware";
+import { promisify } from "util";
 
 interface CustomRequest extends Request {
   CurrentAdmin: any;
 }
+
+const avatarFolder = join(__dirname, "../__images/admin/avatar");
 
 @Controller("/admins")
 @Service()
@@ -17,16 +24,13 @@ export class AdminController {
   constructor(public AdminService: AdminService) {}
 
   @Post("/login")
-  // @UseBefore(ValidationMiddleware(LoginAdminDto))
+  @UseBefore(ValidationMiddleware(LoginAdminDto))
   @OpenAPI({ summary: "Test login User" })
-  async getUsers(@Body() BodyData: any, @Res() response: Response, @Req() request: Request) {
+  async getUsers(@Body() BodyData: any, @Res() response: Response) {
     const User = await this.AdminService.loginAdmin(BodyData);
     response.cookie("session", User.session, { maxAge: 3600000 });
     response.cookie("key", User.jwt, { maxAge: 3600000 });
     delete User.value.sessions;
-    // Get the user's IP address
-    const userIP = request.ip;
-    //TODO: make a email for wrong login request.
 
     return User;
   }
@@ -34,13 +38,37 @@ export class AdminController {
   @Post("/auth")
   @UseBefore(isAdmin)
   @OpenAPI({ summary: "Test login User" })
-  async AdminAuth(@Body() BodyData: any, @Res() response: Response, @Req() request: CustomRequest) {
+  async AdminAuth(@Req() request: CustomRequest) {
     return request.CurrentAdmin;
   }
 
   @Post("/logout")
   @UseBefore(isAdmin)
-  async AdminLogout(@Res() response, @Req() request: CustomRequest) {
-    return this.AdminService.logout(request);
+  async AdminLogout(@Req() request: CustomRequest) {
+    return this.AdminService.logout(request.CurrentAdmin.id);
+  }
+
+  @Post("/change-password")
+  @UseBefore(isAdmin)
+  @UseBefore(ValidationMiddleware(UpdatePasswordDto))
+  async changeUserPassword(@Req() request: CustomRequest, @Body() body: UpdatePasswordDto) {
+    return await this.AdminService.changePassword(request.CurrentAdmin.id, body);
+  }
+
+  @Post("/photo-upload")
+  @UseBefore(isAdmin)
+  async changeUserPhotoUrl(
+    @UploadedFile("avatar", { options: configureMulterOption({ path: avatarFolder }) }) File: Express.Multer.File,
+    @Req() request: CustomRequest,
+  ) {
+    return await this.AdminService.changePhotoUrl(request.CurrentAdmin.id, File.filename);
+  }
+
+  @Get("/avatar/:avatar")
+  async getAvatar(@Param("avatar") avatarName: string, @Res() res: Response) {
+    const file = join(avatarFolder, avatarName);
+    if (!existsSync(file)) throw new HttpException(404, "Avatar not found");
+    await promisify(res.sendFile.bind(res))(file);
+    return res;
   }
 }
