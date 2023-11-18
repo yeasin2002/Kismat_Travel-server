@@ -5,6 +5,47 @@ import { ENV } from "@config";
 import { HttpException } from "@exceptions/http.exception";
 import { ParseBites } from "@utils/encryption";
 
+// body data interface
+export interface PaymentResponse {
+  pg_service_charge_bdt: string;
+  amount_original: string;
+  gateway_fee: string;
+  pg_service_charge_usd: string;
+  pg_card_bank_name: string;
+  pg_card_bank_country: string;
+  card_number: string;
+  card_holder: string;
+  status_code: string;
+  pay_status: string;
+  success_url: string;
+  fail_url: string;
+  cus_name: string;
+  cus_email: string;
+  cus_phone: string;
+  currency_merchant: string;
+  convertion_rate: string;
+  ip_address: string;
+  other_currency: string;
+  pg_txnid: string;
+  epw_txnid: string;
+  mer_txnid: string;
+  store_id: string;
+  merchant_id: string;
+  currency: string;
+  store_amount: string;
+  pay_time: string;
+  amount: string;
+  bank_txn: string;
+  card_type: string;
+  reason: string;
+  pg_card_risklevel: string;
+  pg_error_code_details: string;
+  opt_a: string;
+  opt_b: string;
+  opt_c: string;
+  opt_d: string;
+}
+
 // validate function
 function verifyAamarpayData(data) {
   const validationChecks = [

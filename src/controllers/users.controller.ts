@@ -11,6 +11,8 @@ import { join } from "path";
 import { Authorized, Body, Controller, CurrentUser, Delete, Get, Param, Patch, Post, Put, Res, UploadedFile, UseBefore } from "routing-controllers";
 import { Service } from "typedi";
 import { promisify } from "util";
+import { isAdmin } from "@middlewares/isAdmin.middleware";
+
 
 const avatarFolder = join(__dirname, "../__images/user/avatar");
 
@@ -23,6 +25,15 @@ export class UserController {
   @UseBefore(isAdmin)
   async getUsers() {
     return await this.userService.findAllUser();
+  }
+  @Post("/add_new")
+  @UseBefore(isAdmin)
+  async AddNew(@Body() body: any) {
+    try {
+      return await this.userService.addNewByAdmin(body);
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Authorized()
