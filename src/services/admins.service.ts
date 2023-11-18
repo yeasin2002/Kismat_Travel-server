@@ -2,11 +2,11 @@
 import { db } from "@db";
 import { CreateAdminDto } from "@dtos/admins.dto";
 import { HttpException } from "@exceptions/http.exception";
-import { Service } from "typedi";
-import { compare } from "bcryptjs";
-import generateSessionCode from "@utils/session";
 import { sign } from "@utils/jwt";
+import generateSessionCode from "@utils/session";
+import { compare } from "bcryptjs";
 import { NextFunction, Request, Response } from "express";
+import { Service } from "typedi";
 
 @Service()
 export class AdminService {
@@ -74,18 +74,18 @@ export class AdminService {
     }
   }
 
-  public async logout(request: any) {
-    const Admin_Req = request.CurrentAdmin;
-    await db.Admin.update(
-      {
-        sessions: "",
-      },
-      {
-        where: {
-          id: Admin_Req.id,
-        },
-      },
-    );
+  public async logout(id: string) {
+    await db.Admin.update({ sessions: "" }, { where: { id } });
     return true;
+  }
+
+  public async changePhotoUrl(AdminId: string, photoUrl: string) {
+    const findAdmin = await db.Admin.findByPk(AdminId);
+    if (!findAdmin) throw new HttpException(409, "Admin doesn't exist");
+
+    findAdmin.photo = photoUrl;
+    await findAdmin.save();
+
+    return findAdmin.toJSON();
   }
 }

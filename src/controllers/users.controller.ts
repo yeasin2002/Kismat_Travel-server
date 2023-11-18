@@ -1,6 +1,7 @@
 import { UpdatePasswordDto, UserNameDto } from "@dtos/users.dto";
 import { HttpException } from "@exceptions/http.exception";
 import { User } from "@interfaces/users.interface";
+import { isAdmin } from "@middlewares/isAdmin.middleware";
 import { ValidationMiddleware } from "@middlewares/validation.middleware";
 import { UserService } from "@services/users.service";
 import { configureMulterOption } from "@utils/multer";
@@ -10,8 +11,6 @@ import { join } from "path";
 import { Authorized, Body, Controller, CurrentUser, Delete, Get, Param, Patch, Post, Put, Res, UploadedFile, UseBefore } from "routing-controllers";
 import { Service } from "typedi";
 import { promisify } from "util";
-import { isAdmin } from "@middlewares/isAdmin.middleware";
-
 
 const avatarFolder = join(__dirname, "../__images/user/avatar");
 
