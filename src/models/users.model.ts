@@ -29,6 +29,7 @@ export function UserModel(sequelize: Sequelize) {
 
       email: {
         allowNull: false,
+        unique: true,
         type: DataTypes.STRING,
         validate: {
           isEmail: true,

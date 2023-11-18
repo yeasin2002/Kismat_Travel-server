@@ -31,11 +31,12 @@ export const PassportGoogleStrategy = new GoogleStrategy(
     scope: ["profile", "email"],
   },
   async (accessToken, _, { displayName, _json, profileUrl }, done) => {
+    console.log("🚀 ~ file: passport.middleware.ts:34 ~ profileUrl:", _json.picture);
     try {
       const findUser = await db.Users.unscoped().findOne({ where: { email: _json.email } });
       if (findUser) return done(null, findUser.toJSON());
 
-      const newUser = await db.Users.create({ email: _json.email, password: accessToken, name: displayName, photoUrl: profileUrl });
+      const newUser = await db.Users.create({ email: _json.email, password: accessToken, name: displayName, photoUrl: _json.picture });
       done(null, newUser.toJSON());
     } catch (error) {
       return done(error);
