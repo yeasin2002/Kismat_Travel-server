@@ -1,8 +1,8 @@
+import { db } from "@db";
 import { HttpException } from "@exceptions/http.exception";
 import { verify } from "@utils/jwt";
-import { NextFunction, Request, Response } from "express";
-import { db } from "@db";
 import { compare } from "bcryptjs";
+import { NextFunction, Request, Response } from "express";
 
 interface CustomRequest extends Request {
   CurrentAdmin: any;
@@ -27,7 +27,8 @@ export const isAdmin = async (req: CustomRequest, res: Response, next: NextFunct
       throw new HttpException(406, "Invalid request");
     }
 
-    if (req.body.password) {
+    // TODO: Check if password is changed
+    if (req.body._password) {
       const passwordCompare = await compare(req.body.password, admin_in_database.password);
 
       if (!passwordCompare) {
