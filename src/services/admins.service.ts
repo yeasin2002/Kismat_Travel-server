@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { db } from "@db";
-import { CreateAdminDto } from "@dtos/admins.dto";
+import { CreateAdminDto, UpdatePasswordDto } from "@dtos/admins.dto";
 import { HttpException } from "@exceptions/http.exception";
 import { sign } from "@utils/jwt";
 import generateSessionCode from "@utils/session";
@@ -77,6 +77,18 @@ export class AdminService {
   public async logout(id: string) {
     await db.Admin.update({ sessions: "" }, { where: { id } });
     return true;
+  }
+
+  public async changePassword(adminId: string, credentials: UpdatePasswordDto) {
+    const findAdmin = await db.Admin.unscoped().findByPk(adminId);
+
+    if (!findAdmin) throw new HttpException(409, "Admin doesn't exist");
+    if (!compare(credentials.current, findAdmin.password)) throw new HttpException(401, "Authentication failed");
+
+    findAdmin.password = credentials.password;
+    await findAdmin.save();
+
+    return { success: true };
   }
 
   public async changePhotoUrl(AdminId: string, photoUrl: string) {

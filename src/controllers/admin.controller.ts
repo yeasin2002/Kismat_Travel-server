@@ -1,4 +1,4 @@
-import { LoginAdminDto } from "@dtos/admins.dto";
+import { LoginAdminDto, UpdatePasswordDto } from "@dtos/admins.dto";
 import { HttpException } from "@exceptions/http.exception";
 import { isAdmin } from "@middlewares/isAdmin.middleware";
 import { ValidationMiddleware } from "@middlewares/validation.middleware";
@@ -46,6 +46,13 @@ export class AdminController {
   @UseBefore(isAdmin)
   async AdminLogout(@Req() request: CustomRequest) {
     return this.AdminService.logout(request.CurrentAdmin.id);
+  }
+
+  @Post("/change-password")
+  @UseBefore(isAdmin)
+  @UseBefore(ValidationMiddleware(UpdatePasswordDto))
+  async changeUserPassword(@Req() request: CustomRequest, @Body() body: UpdatePasswordDto) {
+    return await this.AdminService.changePassword(request.CurrentAdmin.id, body);
   }
 
   @Post("/photo-upload")
