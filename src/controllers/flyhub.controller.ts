@@ -9,7 +9,7 @@ export class FlyhubController {
   constructor(public flyHubService: FlyhubService) {}
 
   @Authorized()
-  @Post("/AirPreBook")
+  @Post("/airprebook")
   public async AirPreBook(@Body() body: any, @CurrentUser() _user: User) {
     return this.flyHubService.AirPreBook(body, _user);
   }

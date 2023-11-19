@@ -1,11 +1,12 @@
 import { db } from "@db";
 import { Service } from "typedi";
-import { SearchResultOptions } from "@interfaces/flyhub.interface";
+import { SearchResultOptions, Prebook_res_options } from "@interfaces/flyhub.interface";
 import { User } from "@interfaces/users.interface";
 import axios from "axios";
 import { ENV } from "@config";
 import { getAuthorizeHeader } from "@utils/authorize";
 import Payment from "@/payment/Payment";
+import { HttpException } from "@exceptions/http.exception";
 
 function generateUniqueTransactionId(string: string): string {
   const timestamp = new Date().getTime();
@@ -14,15 +15,35 @@ function generateUniqueTransactionId(string: string): string {
   return transactionId;
 }
 
+function calculateSumWithPercentage(percentage, amount) {
+  const percentageNumber = typeof percentage === "string" ? parseFloat(percentage) : percentage;
+  const amountNumber = typeof amount === "string" ? parseFloat(amount) : amount;
+
+  if (isNaN(percentageNumber) || isNaN(amountNumber)) {
+    throw new Error("Invalid input. Please Provide a valid number");
+  }
+
+  const percentageDecimal = percentageNumber / 100;
+  const sum = amountNumber + amountNumber * percentageDecimal;
+  return sum;
+}
+
 @Service()
 export class FlyhubService {
   public async AirPreBook(body: SearchResultOptions, _user: User) {
     try {
       const token = await getAuthorizeHeader();
-      const axiosResponse = await axios.post(`${ENV.FLY_HUB_API_BASE_URL}/AirPreBook`, body, {
+      const axiosResponse = await axios.post<Prebook_res_options>(`${ENV.FLY_HUB_API_BASE_URL}/AirPreBook`, body, {
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
       });
 
+      if (axiosResponse.data.Results[0].Availabilty < 1) {
+        throw new HttpException(400, "The Ticket is not available");
+      }
+
+      const profitDB = await db.Profit.findOne();
+      const Profit = profitDB.toJSON();
+      // user_profit
       const DBres = await db.PreBookings.create({
         searchId: body.SearchID,
         userId: _user.id,
@@ -32,8 +53,8 @@ export class FlyhubService {
       });
 
       const paymentRes = await Payment({
-        amount: "",
-        currency: "BDT",
+        amount: `${calculateSumWithPercentage(Profit.user_profit, axiosResponse.data.Results[0].TotalFare)}`,
+        currency: axiosResponse.data.Results[0].Currency as "BDT" | "USD",
         cus_email: body.Passengers[0].Email,
         cus_name: body.Passengers[0].FirstName + " " + body.Passengers[0].LastName,
         cus_phone: body.Passengers[0].ContactNumber,
