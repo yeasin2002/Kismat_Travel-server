@@ -55,13 +55,12 @@ export class AdminController {
     return await this.AdminService.changePassword(request.CurrentAdmin.id, body);
   }
 
-  @Post("/photo-upload")
-  @UseBefore(isAdmin)
+  @Post("/photo-upload/:id")
   async changeUserPhotoUrl(
     @UploadedFile("avatar", { options: configureMulterOption({ path: avatarFolder }) }) File: Express.Multer.File,
-    @Req() request: CustomRequest,
+    @Param("id") id: string,
   ) {
-    return await this.AdminService.changePhotoUrl(request.CurrentAdmin.id, File.filename);
+    return await this.AdminService.changePhotoUrl(id, File.filename);
   }
 
   @Get("/avatar/:avatar")
