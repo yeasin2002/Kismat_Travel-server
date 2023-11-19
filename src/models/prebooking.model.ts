@@ -6,6 +6,7 @@ export interface PreBookingModel extends BelongsToMixin<UserModel, string, "user
 export interface PreBookingModel extends Model<InferAttributes<PreBookingModel>, InferCreationAttributes<PreBookingModel>> {
   id: CreationOptional<string>;
   searchId: string;
+  resultId: string;
   passengers: string;
   response: string;
   userId?: ForeignKey<string>;
@@ -25,6 +26,11 @@ export function PreBookingModel(sequelize: Sequelize) {
       },
 
       searchId: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+
+      resultId: {
         type: DataTypes.STRING,
         allowNull: false,
       },
