@@ -88,3 +88,49 @@ export interface Prebook_res_options {
   Error: any; // Replace 'any' with a more specific type if available
   RePriceStatus: number;
 }
+
+interface Ticket {
+  TicketNo: string;
+}
+
+export interface Passenger {
+  Title: string;
+  FirstName: string;
+  LastName: string;
+  PaxType: number;
+  DateOfBirth: string;
+  Gender: number;
+  PassportNumber: string;
+  PassportExpiryDate: string;
+  PassportNationality: string;
+  Address1: string;
+  Address2: string | null;
+  CountryCode: string;
+  Nationality: string;
+  ContactNumber: string;
+  Email: string;
+  FFAirline: string | null;
+  FFNumber: string | null;
+  Ticket: Ticket[];
+}
+
+interface Result {
+  ResultID: string;
+  IsRefundable: boolean;
+  Fares: Fare[];
+  Discount: number;
+  Validatingcarrier: string;
+  LastTicketDate: string;
+  segments: Segment[];
+  TotalFare: number;
+  Currency: string;
+  Availabilty: number;
+}
+
+export interface FlightBooking {
+  BookingID: string;
+  Results: Result[];
+  Passengers: Passenger[];
+  BookingStatus: number;
+  Error: null;
+}

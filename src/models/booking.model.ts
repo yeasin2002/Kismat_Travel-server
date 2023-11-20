@@ -9,7 +9,8 @@ export interface BookingModel extends Model<InferAttributes<BookingModel>, Infer
   passengers: string;
   response: string;
   userId?: ForeignKey<string>;
-
+  payment: string;
+  amount: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -25,6 +26,14 @@ export function BookingModel(sequelize: Sequelize) {
       },
 
       bookingId: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      payment: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      amount: {
         type: DataTypes.STRING,
         allowNull: false,
       },
@@ -70,7 +79,7 @@ export function BookingModel(sequelize: Sequelize) {
     {
       defaultScope: {
         attributes: {
-          exclude: ["UserId", "userId"],
+          // exclude: ["UserId", "userId", "payment_id"],
           include: [
             [literal("JSON_UNQUOTE(passengers)"), "passengers"],
             [literal("JSON_UNQUOTE(response)"), "response"],

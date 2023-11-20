@@ -1,4 +1,5 @@
 import { payment_gateway_service } from "@services/payment_gateway.service";
+import { FlyhubService } from "@services/flyhub.service";
 import { Controller, Post, Body, Get } from "routing-controllers";
 import { Service } from "typedi";
 import Payment, { PaymentResponse } from "@/payment/Payment";
@@ -6,11 +7,36 @@ import Payment, { PaymentResponse } from "@/payment/Payment";
 @Controller("/payment_handler")
 @Service()
 export class Payment_Handler {
-  constructor(public payment_gateway_service: payment_gateway_service) {}
+  constructor(public payment_gateway_service: payment_gateway_service, public FlyhubService: FlyhubService) {}
   @Post("/bookings")
   public async success(@Body() body: PaymentResponse) {
-    console.log(body);
-    return body;
+    try {
+      // create payment record in database
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const CreteNewInvoice = await this.payment_gateway_service.createPaymentInvoice({
+        all_data: body,
+        amount_original: body.amount_original,
+        currency_merchant: body.currency_merchant,
+        cus_email: body.cus_email,
+        name: body.cus_name,
+        status: body.status_code,
+        store_amount: body.store_amount,
+      });
+      // make booking route call to api
+      const BookingRes = await this.FlyhubService.AirBook(body.opt_a);
+      // make the booking record table to the database
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const NewBookingRecord = await this.FlyhubService.CreateBook(
+        body.store_amount,
+        BookingRes.data.Passengers,
+        BookingRes.data,
+        body.amount_original,
+        BookingRes.User,
+      );
+      return NewBookingRecord;
+    } catch (error) {
+      throw error;
+    }
   }
   @Get("/")
   public async test() {

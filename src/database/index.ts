@@ -8,6 +8,7 @@ import { PreBookingModel } from "@models/prebooking.model";
 import { Profit_model } from "@models/profit.model";
 import { SearchModel } from "@models/search.model";
 import { UserModel } from "@models/users.model";
+import { Payment_online } from "@models/payment.online.model";
 import { logger } from "@utils/logger";
 import { Sequelize } from "sequelize";
 
@@ -53,12 +54,19 @@ const Bookings = BookingModel(sequelize);
 const Profit = Profit_model(sequelize);
 const PreBookings = PreBookingModel(sequelize);
 const Searches = SearchModel(sequelize);
+const Payment_Online = Payment_online(sequelize);
 
 Users.hasMany(Bookings, { as: "booking", onDelete: "cascade" });
 Bookings.belongsTo(Users, { foreignKey: "userId", as: "user", onDelete: "cascade" });
 
 Users.hasMany(PreBookings, { as: "preBooking", onDelete: "cascade" });
 PreBookings.belongsTo(Users, { foreignKey: "userId", as: "user", onDelete: "cascade" });
+
+Users.hasMany(Payment_Online, { as: "Payment_Online", onDelete: "cascade" });
+Payment_Online.belongsTo(Users, { foreignKey: "userId", as: "user", onDelete: "cascade" });
+
+Payment_Online.hasMany(Bookings, { as: "Payment_data", onDelete: "cascade" });
+Bookings.belongsTo(Payment_Online, { foreignKey: "Payment_id", as: "_payment", onDelete: "cascade" });
 
 export const db = {
   Users,
@@ -70,5 +78,6 @@ export const db = {
   Bookings,
   PreBookings,
   Searches,
+  Payment_Online,
   sequelize,
 } as const;
