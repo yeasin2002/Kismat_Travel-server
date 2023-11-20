@@ -63,4 +63,28 @@ export class payment_gateway_service {
       throw error;
     }
   }
+  public async createPaymentInvoice(data: {
+    name: string;
+    amount_original: string;
+    cus_email: string;
+    store_amount: string;
+    currency_merchant: string;
+    all_data: Object;
+    status: string;
+  }) {
+    try {
+      const paymentCreate = await db.Payment_Online.create({
+        name: data.name,
+        amount_original: data.amount_original,
+        currency_merchant: data.currency_merchant,
+        cus_email: data.cus_email,
+        store_amount: data.store_amount,
+        all_data: JSON.stringify(data.all_data),
+        status: data.status,
+      });
+      return paymentCreate.toJSON();
+    } catch (error) {
+      throw error;
+    }
+  }
 }

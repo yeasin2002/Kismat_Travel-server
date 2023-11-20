@@ -2,6 +2,7 @@ import { db } from "@db";
 import { Service } from "typedi";
 import { SearchResultOptions, Prebook_res_options } from "@interfaces/flyhub.interface";
 import { User } from "@interfaces/users.interface";
+import { FlightBooking, Passenger } from "@interfaces/flyhub.interface";
 import axios from "axios";
 import { ENV } from "@config";
 import { getAuthorizeHeader } from "@utils/authorize";
@@ -38,6 +39,7 @@ export class FlyhubService {
       const axiosResponse = await axios.post<Prebook_res_options>(`${ENV.FLY_HUB_API_BASE_URL}/AirPreBook`, body, {
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
       });
+      console.log("🚀 ~ file: flyhub.service.ts:41 ~ FlyhubService ~ AirPreBook ~ axiosResponse:", axiosResponse);
 
       if (axiosResponse.data.Error) {
         throw new HttpException(400, axiosResponse.data.Error.ErrorMessage);
@@ -69,6 +71,50 @@ export class FlyhubService {
       return paymentRes;
     } catch (error) {
       console.log("🚀 ~ file: flyhub.service.ts:69 ~ FlyhubService ~ AirPreBook ~ error:", error);
+      throw error;
+    }
+  }
+  public async AirBook(id: string): Promise<{
+    data: FlightBooking;
+    User: string;
+  }> {
+    try {
+      const dataInDatabase = await db.PreBookings.findByPk(id);
+      const ParseData = dataInDatabase.toJSON();
+      const token = await getAuthorizeHeader();
+      const axiosResponse = await axios.post<FlightBooking>(
+        `${ENV.FLY_HUB_API_BASE_URL}/AirBook`,
+        {
+          SearchID: ParseData.searchId,
+          ResultID: ParseData.resultId,
+          Passengers: [...ParseData.passengers],
+        },
+        {
+          headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        },
+      );
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      return { data: axiosResponse.data, User: ParseData.user.id as string };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async CreateBook(amount: string, passengers: Passenger[], response: FlightBooking, payment: string, userId: string) {
+    try {
+      const resNew = await db.Bookings.create({
+        amount: amount,
+        passengers: JSON.stringify(passengers),
+        response: JSON.stringify(response),
+        bookingId: response.BookingID,
+        payment: payment,
+        userId: userId,
+        //TODO: check make relation on user data
+        // payment_id: response.BookingID,
+      });
+      return resNew;
+    } catch (error) {
       throw error;
     }
   }

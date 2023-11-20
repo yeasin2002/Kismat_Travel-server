@@ -44,4 +44,18 @@ export class SeedService {
       resolve("all profit data seeded");
     });
   }
+
+  public async test() {
+    try {
+      const id = "e1f1fccf-5ed5-45a1-a179-fc54222af3ec";
+      const nahid = await db.PreBookings.findByPk(id);
+
+      console.log("🚀 ~ file: seed.service.ts:51 ~ SeedService ~ test ~ nahid:", nahid);
+
+      return nahid.toJSON();
+    } catch (error) {
+      console.log("🚀 ~ file: seed.service.ts:53 ~ SeedService ~ test ~ error:", error);
+      throw error;
+    }
+  }
 }

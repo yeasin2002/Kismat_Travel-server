@@ -23,4 +23,9 @@ export class SeedController {
       return error;
     }
   }
+
+  @Get("/test")
+  public async testData() {
+    return this.seedService.test();
+  }
 }
