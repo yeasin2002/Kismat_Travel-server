@@ -65,8 +65,8 @@ PreBookings.belongsTo(Users, { foreignKey: "userId", as: "user", onDelete: "casc
 Users.hasMany(Payment_Online, { as: "Payment_Online", onDelete: "cascade" });
 Payment_Online.belongsTo(Users, { foreignKey: "userId", as: "user", onDelete: "cascade" });
 
-Payment_Online.hasMany(Bookings, { as: "Payment_data", onDelete: "cascade" });
-Bookings.belongsTo(Payment_Online, { foreignKey: "Payment_id", as: "_payment", onDelete: "cascade" });
+Payment_Online.hasOne(Bookings, { as: "Payment_data", onDelete: "cascade" });
+Bookings.belongsTo(Payment_Online, { foreignKey: "payment_id", as: "_payment", onDelete: "cascade" });
 
 export const db = {
   Users,

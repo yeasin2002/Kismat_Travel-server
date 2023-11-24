@@ -1,15 +1,16 @@
 import { payment_gateway_service } from "@services/payment_gateway.service";
 import { FlyhubService } from "@services/flyhub.service";
-import { Controller, Post, Body, Get } from "routing-controllers";
+import { Controller, Post, Body, Get, Res } from "routing-controllers";
 import { Service } from "typedi";
 import Payment, { PaymentResponse } from "@/payment/Payment";
+import { Response } from "express";
 
 @Controller("/payment_handler")
 @Service()
 export class Payment_Handler {
   constructor(public payment_gateway_service: payment_gateway_service, public FlyhubService: FlyhubService) {}
   @Post("/bookings")
-  public async success(@Body() body: PaymentResponse) {
+  public async success(@Body() body: PaymentResponse, @Res() res: Response) {
     try {
       // create payment record in database
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -32,8 +33,10 @@ export class Payment_Handler {
         BookingRes.data,
         body.amount_original,
         BookingRes.User,
+        CreteNewInvoice.id,
       );
-      return NewBookingRecord;
+
+      res.redirect("/bookings/" + CreteNewInvoice.id);
     } catch (error) {
       throw error;
     }

@@ -101,7 +101,7 @@ export class FlyhubService {
     }
   }
 
-  public async CreateBook(amount: string, passengers: Passenger[], response: FlightBooking, payment: string, userId: string) {
+  public async CreateBook(amount: string, passengers: Passenger[], response: FlightBooking, payment: string, userId: string, payment_ID: string) {
     try {
       const resNew = await db.Bookings.create({
         amount: amount,
@@ -110,8 +110,9 @@ export class FlyhubService {
         bookingId: response.BookingID,
         payment: payment,
         userId: userId,
+
         //TODO: check make relation on user data
-        // payment_id: response.BookingID,
+        payment_id: payment_ID,
       });
       return resNew;
     } catch (error) {
