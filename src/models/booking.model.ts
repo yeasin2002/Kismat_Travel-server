@@ -9,6 +9,7 @@ export interface BookingModel extends Model<InferAttributes<BookingModel>, Infer
   passengers: string;
   response: string;
   userId?: ForeignKey<string>;
+  payment_id?: ForeignKey<string>;
   payment: string;
   amount: string;
   createdAt?: Date;
