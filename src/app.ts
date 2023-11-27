@@ -57,7 +57,9 @@ export class App {
   }
 
   private async connectToDatabase() {
-    await db.sequelize.sync();
+    await db.sequelize.sync({
+      alter: false,
+    });
   }
 
   private initializeServices() {

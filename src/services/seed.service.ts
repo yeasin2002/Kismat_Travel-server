@@ -1,5 +1,6 @@
 import airports from "@data/airports-data.json";
 import { db } from "@db";
+import { literal } from "sequelize";
 import { Service } from "typedi";
 
 @Service()
@@ -47,14 +48,17 @@ export class SeedService {
 
   public async test() {
     try {
-      const id = "e1f1fccf-5ed5-45a1-a179-fc54222af3ec";
-      const nahid = await db.PreBookings.findByPk(id);
-
-      console.log("🚀 ~ file: seed.service.ts:51 ~ SeedService ~ test ~ nahid:", nahid);
-
-      return nahid.toJSON();
+      const nahid = await db.Bookings.findAll({
+        include: [db.Users, db.Payment_Online],
+      });
+      // console.log("🚀 ~ file: seed.service.ts:51 ~ SeedService ~ test ~ nahid:", nahid.toJSON());
+      return nahid.map(e => e.toJSON());
     } catch (error) {
-      console.log("🚀 ~ file: seed.service.ts:53 ~ SeedService ~ test ~ error:", error);
+      console.log("🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀");
+      console.log("🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀");
+      console.log("🚀 file: seed.service.ts:53 ~ SeedService ~ test ~ error:", error);
+      console.log("🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀");
+      console.log("🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀");
       throw error;
     }
   }

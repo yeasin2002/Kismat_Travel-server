@@ -39,7 +39,6 @@ export class FlyhubService {
       const axiosResponse = await axios.post<Prebook_res_options>(`${ENV.FLY_HUB_API_BASE_URL}/AirPreBook`, body, {
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
       });
-      console.log("🚀 ~ file: flyhub.service.ts:41 ~ FlyhubService ~ AirPreBook ~ axiosResponse:", axiosResponse);
 
       if (axiosResponse.data.Error) {
         throw new HttpException(400, axiosResponse.data.Error.ErrorMessage);
@@ -57,6 +56,7 @@ export class FlyhubService {
         response: JSON.stringify(axiosResponse.data),
         passengers: JSON.stringify(body.Passengers),
       });
+
       const paymentRes = await Payment({
         amount: `${calculateSumWithPercentage(ParseBites(Profit.user_profit), axiosResponse.data.Results[0].TotalFare)}`,
         currency: axiosResponse.data.Results[0].Currency as "BDT" | "USD",
@@ -66,7 +66,8 @@ export class FlyhubService {
         desc: "Buy plane ticket Online",
         success_url: "bookings",
         tran_id: generateUniqueTransactionId(body.Passengers[0].FirstName.slice(0, 3)),
-        opt_a: DBres.id,
+        opt_a: _user.id,
+        opt_b: DBres.id,
       });
       return paymentRes;
     } catch (error) {
@@ -112,7 +113,7 @@ export class FlyhubService {
         userId: userId,
 
         //TODO: check make relation on user data
-        payment_id: payment_ID,
+        paymentId: payment_ID,
       });
       return resNew;
     } catch (error) {

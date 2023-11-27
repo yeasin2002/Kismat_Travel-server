@@ -29,7 +29,6 @@ export class PreBookingService {
     const userPreBookings = await db.PreBookings.findAll({
       where: { userId },
     });
-
     return userPreBookings.map(_v => _v.toJSON());
   }
 
@@ -37,11 +36,8 @@ export class PreBookingService {
     const preBooking = await db.PreBookings.findOne({
       where: { id: preBookingId },
     });
-
     if (!preBooking) throw new HttpException(404, "PreBooking not found");
-
     await preBooking.destroy();
-
     return preBooking.toJSON();
   }
 }
