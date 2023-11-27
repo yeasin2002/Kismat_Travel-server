@@ -14,17 +14,20 @@ export class Payment_Handler {
     try {
       // create payment record in database
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const CreteNewInvoice = await this.payment_gateway_service.createPaymentInvoice({
-        all_data: body,
-        amount_original: body.amount_original,
-        currency_merchant: body.currency_merchant,
-        cus_email: body.cus_email,
-        name: body.cus_name,
-        status: body.status_code,
-        store_amount: body.store_amount,
-      });
+      const CreteNewInvoice = await this.payment_gateway_service.createPaymentInvoice(
+        {
+          all_data: body,
+          amount_original: body.amount_original,
+          currency_merchant: body.currency_merchant,
+          cus_email: body.cus_email,
+          name: body.cus_name,
+          status: body.status_code,
+          store_amount: body.store_amount,
+        },
+        body.opt_a,
+      );
       // make booking route call to api
-      const BookingRes = await this.FlyhubService.AirBook(body.opt_a);
+      const BookingRes = await this.FlyhubService.AirBook(body.opt_b);
       // make the booking record table to the database
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const NewBookingRecord = await this.FlyhubService.CreateBook(

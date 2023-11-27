@@ -56,17 +56,17 @@ const PreBookings = PreBookingModel(sequelize);
 const Searches = SearchModel(sequelize);
 const Payment_Online = Payment_online(sequelize);
 
-Users.hasMany(Bookings, { as: "booking", onDelete: "cascade" });
-Bookings.belongsTo(Users, { foreignKey: "userId", as: "user", onDelete: "cascade" });
+Users.hasMany(Bookings, { foreignKey: "userId", onDelete: "cascade" });
+Bookings.belongsTo(Users, { foreignKey: "userId", onDelete: "cascade" });
 
 Users.hasMany(PreBookings, { as: "preBooking", onDelete: "cascade" });
 PreBookings.belongsTo(Users, { foreignKey: "userId", as: "user", onDelete: "cascade" });
 
-Users.hasMany(Payment_Online, { as: "Payment_Online", onDelete: "cascade" });
-Payment_Online.belongsTo(Users, { foreignKey: "userId", as: "user", onDelete: "cascade" });
+Users.hasMany(Payment_Online, { foreignKey: "userId", onDelete: "cascade" });
+Payment_Online.belongsTo(Users, { foreignKey: "userId", onDelete: "cascade" });
 
-Payment_Online.hasOne(Bookings, { as: "Payment_data", onDelete: "cascade" });
-Bookings.belongsTo(Payment_Online, { foreignKey: "payment_id", as: "_payment", onDelete: "cascade" });
+Payment_Online.hasOne(Bookings, { foreignKey: "paymentId", onDelete: "cascade" });
+Bookings.belongsTo(Payment_Online, { foreignKey: "paymentId", onDelete: "cascade" });
 
 export const db = {
   Users,

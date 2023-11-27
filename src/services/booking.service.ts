@@ -1,6 +1,7 @@
 import { db } from "@db";
 import { HttpException } from "@exceptions/http.exception";
 import { Service } from "typedi";
+import { threadId } from "worker_threads";
 
 @Service()
 export class BookingService {
@@ -20,9 +21,14 @@ export class BookingService {
   }
 
   public async getBookings() {
-    const bookings = await db.Bookings.findAll({});
-
-    return bookings.map(_v => _v.toJSON());
+    try {
+      const bookings = await db.Bookings.findAll();
+      console.log("🚀 ~ file: booking.service.ts:24 ~ BookingService ~ getBookings ~ bookings:", bookings);
+      return bookings.map(_v => _v.toJSON());
+    } catch (error) {
+      console.log("🚀 ~ file: booking.service.ts:31 ~ BookingService ~ getBookings ~ error:", error);
+      throw error;
+    }
   }
 
   public async getBookingsByUserId(userId: string) {

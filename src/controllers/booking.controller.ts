@@ -1,6 +1,5 @@
-import { BookingCreateDto } from "@dtos/booking.dto";
 import { User } from "@interfaces/users.interface";
-import { ValidationMiddleware } from "@middlewares/validation.middleware";
+import { isAdmin } from "@middlewares/isAdmin.middleware";
 import { BookingService } from "@services/booking.service";
 import { Authorized, Body, Controller, CurrentUser, Delete, Get, Post, UseBefore } from "routing-controllers";
 import { Service } from "typedi";
@@ -10,15 +9,15 @@ import { Service } from "typedi";
 export class BookingController {
   constructor(public bookingService: BookingService) {}
 
-  @Authorized()
-  @Post()
-  @UseBefore(ValidationMiddleware(BookingCreateDto))
-  async createBooking(@Body() data: BookingCreateDto, @CurrentUser() _user: User) {
-    return this.bookingService.createBooking(_user.id, data.bookingId, data.response, data.passengers);
-  }
+  // @Authorized()
+  // @Post()
+  // @UseBefore(ValidationMiddleware(BookingCreateDto))
+  // async createBooking(@Body() data: BookingCreateDto, @CurrentUser() _user: User) {
+  //   return this.bookingService.createBooking(_user.id, data.bookingId, data.response, data.passengers);
+  // }
 
-  @Authorized()
-  @Get()
+  @Post()
+  @UseBefore(isAdmin)
   async getBookings() {
     return this.bookingService.getBookings();
   }

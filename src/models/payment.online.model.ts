@@ -1,5 +1,5 @@
 // import { hash } from "@utils/encryption";
-import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model, Sequelize, literal } from "sequelize";
+import { CreationOptional, DataTypes, ForeignKey, InferAttributes, InferCreationAttributes, Model, Sequelize, literal } from "sequelize";
 
 export interface Payment_online_options extends Model<InferAttributes<Payment_online_options>, InferCreationAttributes<Payment_online_options>> {
   id: CreationOptional<string>;
@@ -10,6 +10,7 @@ export interface Payment_online_options extends Model<InferAttributes<Payment_on
   cus_email: string;
   store_amount: string;
   all_data: string;
+  userId?: ForeignKey<string>;
 }
 
 export function Payment_online(sequelize: Sequelize) {
@@ -73,9 +74,6 @@ export function Payment_online(sequelize: Sequelize) {
         attributes: {
           exclude: ["UserId", "userId"],
           include: [[literal("JSON_UNQUOTE(all_data)"), "all_data"]],
-        },
-        include: {
-          all: true,
         },
       },
     },
